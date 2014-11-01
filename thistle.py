@@ -12,7 +12,8 @@ class firebaseWriter:
     def __init__(self, terminalIdentifier):
         self.terminalIdentifier = terminalIdentifier
     def write(self, s):
-        firebase.patch(firebaseLocation + roomIdentifier + '/' + self.terminalIdentifier + '/out/' + timestamp, s)
+        for l in s.splitlines():
+            firebase.patch(firebaseLocation + roomIdentifier + '/' + self.terminalIdentifier + '/out/' + timestamp, s)
         # firebase stuff using self.terminalIdentifier and firebaseLocation and time.time()
     def writelines(self, l):
         for s in l:
@@ -29,22 +30,59 @@ def delFirebaseWriter(terminalIdentifier):
 def onStatement(terminalIdentifier, statement):
     adjustedGlobals = copy.copy(globals())
     adjustedGlobals['sys']['stdout'] = getFirebaseWriter(terminalIdentifer)
+    adjustedGlobals['sys']['stderr'] = getFirebaseWriter(terminalIdentifer)
     exec(statement, globals = adjustedGlobals)
 
 def handleFirebaseEvent(message):
-    # must throw keyboardinterrupt to indicate stop subscriber when room is empty
     path, data = message
-    
-    print path,data
+    if path == '/':
+        for terminalIdentifier in data.keys():
+            handleFirebaseEvent(('/'+terminalIdentifier, data[terminalIdentifier]))
+        return
+    terminalIdentifier = path.split('/')[1]
+    # check if user is being removed; remove from user set;
+    # if user set is empty, raise CTRL+C (this will make out null)
+    # then return
+    if path.count('/') == 1 and data is None:
+        # user is being removed!
+        if terminalIdentifiers:
+            terminalIdentifiers.remove(user)
+        else:
+            return
+        if not terminalIdentifiers:
+            raise KeyboardInterrupt
+    if terminalIdentifiers is None:
+        terminalIdentifiers = set([terminalIdentifier])
+        print 'initialized terminal identifiers'
+    # check if write is to out; if so, ignore
+    if path.count('/') == 1:
+        if 'in' in map(lower, data.keys()):
+            sort_me = data['in'].items()
+            # sorted(lambda x:x[0] or x:-x[0]???
+            for statement in map(lambda x:x[1],
+                    sorted(lambda x:x[0], sort_me)):
+                onStatement(terminalIdentifier, statement)
+    elif path.split('/')[2].lower() == 'in':
+        if path.count('/') == 2:
+            sort_me = data.items()
+            for statement in map(lambda x:x[1],
+                    sorted(lambda x:x[0], sort_me)):
+                onStatement(terminalIdentifier, statement)
+        elif path.count('/') == 3:
+            onStatement(terminalIdentifier, statement)
+    # this should be sending an input
+    # grab the input and run onStatement on it; possibly in a thread
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print 'Incorrect usage.'
-        print 'Example: python thistle.py thistle-io a540093'
+        print 'Example: python thistle.py thistle-io room_a540093'
         sys.exit(-1)
     firebaseLocation = firebaseURL(sys.argv[1]).replace('.json','') #ends with /
     roomIdentifier = sys.argv[2]
     firebaseWriters = {}
+    terminalIdentifiers = None
+    # any stuff in in that hasn't been run is obviously not run
     firebaseSubscriber = firebase.subscriber(firebaseLocation + '.json', handleFirebaseEvent)
     firebaseSubscriber.start()
     firebaseSubscriber.wait()

@@ -50,6 +50,7 @@ class RemoteThread(threading.Thread):
         except socket.error:
             pass    # this can happen when we close the stream
         except KeyboardInterrupt:
+            print 'ICK'
             self.close()
     def close(self):
         if self.sse:
