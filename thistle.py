@@ -36,7 +36,12 @@ def getFirebaseWriter(terminalIdentifier):
         firebaseWriters[terminalIdentifier] = new firebaseWriter(terminalIdentifier)
     return firebaseWriters[terminalIdentifier]
 
+def delFirebaseWriter(terminalIdentifier):
+    del firebaseWriters[terminalIdentifier]    
+
 def onStatement(terminalIdentifier, statement):
     adjustedGlobals = globals()
     adjustedGlobals['sys']['stdout'] = getFirebaseWriter(terminalIdentifer)
     exec(statement, adjustedGlobals)
+
+
