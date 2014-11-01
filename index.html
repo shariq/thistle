@@ -4,7 +4,7 @@
     
 <head>
     <title>Thistle</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8";>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
     <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
     <style type="text/css"></style>
@@ -41,7 +41,9 @@ $( document ).ready(function() {
         return text;
     };
     //Ensure that they navigate to the correct website I do actually have a function for this
-    if (window.location == "http://thistle.io") debugger;{
+    if (window.location == "http://thistle.io")
+    {
+        debugger;
         window.location = "http://thistle.io/"+makeid(); 
     }
     //Ask for Username
@@ -51,15 +53,22 @@ $( document ).ready(function() {
     
     //consider using prepend.to//
     var newuser = new Firebase('https://thistle-io.firebaseio.com/'); //(find a way to add the elemnt into the on('child_added') for whatever reason I am getting an error)
+    
     newuser.on('child_added', function(snapshot){
         debugger;
-        alert('NEVER GOES IN HERE');
+        console.log('NEVER GOES IN HERE');
         var snapshotvalue=snapshot.val();
         $("#header ul").prepend('<li></li>');
     });
+    
+    //If this person gave use some random  URL then we want to create a key value to store in the database
+    var roomID = document.URL.split("/")[length(document.URL.split("/"))];
+    var newentry = new Firebase('https://thistle-io.firebaseio.com/'+roomID) //Do I need to create a entry further in or just stop at thistle.io/?//
+    var defaultmessage = newentry.push()
+        defaultmessage.set({'username':user, 'in':'Welcome to this unnecessary console'});
+    
+    
     // add terminal console to the added li
-    
-    
     
     // Record the current time immediately, and queue an event to
     // record the time at which the user disconnects.
@@ -71,10 +80,6 @@ $( document ).ready(function() {
     */
     //have a latest and a list of their previous commands, so when they add a new push 
 });
-
-//Random url generator
-
-
     </script>
 </body>
 </html>
