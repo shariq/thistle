@@ -1,9 +1,9 @@
-# forked from firebase/EventSource-Examples
+# adapted from firebase/EventSource-Examples/python/chat.py
 '''
 Copyright 2014 Firebase, https://www.firebase.com/
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -12,6 +12,10 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 '''
+
+# usage:
+# S = firebase.subscriber(URL, print)
+# firebase.push(URL, data)
 
 from sseclient import SSEClient
 from Queue import Queue
@@ -78,9 +82,14 @@ class RemoteThread(threading.Thread):
         if self.sse:
             self.sse.close()
 
+def firebaseURL(URL):
+    if '.json' not in URL.lower():
+        return URL + '.json'
+    return URL
+
 class subscriber:
     def __init__(self, URL, function):
-        self.remote_thread = RemoteThread(URL, function)
+        self.remote_thread = RemoteThread(firebaseURL(URL), function)
     def start(self):
         self.remote_thread.start()
     def stop(self):
@@ -92,4 +101,4 @@ post_thread = PostThread(outbound_queue)
 post_thread.start()
 
 def push(URL, data):
-    outbound_queue.put((URL, data))
+    outbound_queue.put((firebaseURL(URL), data))
