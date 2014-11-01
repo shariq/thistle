@@ -23,7 +23,9 @@
     </h1>
     <div class= "table">
         <ul>
-            <li>Coffee</li>
+            <li>
+                
+            </li>
         </ul>
     </div>
     <script>
@@ -32,7 +34,8 @@
 $( document ).ready(function() {
     console.log( "ready!" );
     
-    //I need redo the redirect so that the member the url 
+    //I need redo the redirect so that the member the url
+    /*
     function makeid() {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -46,6 +49,7 @@ $( document ).ready(function() {
         debugger;
         window.location = "http://thistle.io/"+makeid(); 
     }
+    */
     //Ask for Username
     var user=prompt("Enter your name");
     /* this needs to be done in conjugction with
@@ -65,20 +69,31 @@ $( document ).ready(function() {
     var roomID = document.URL.split("/")[length(document.URL.split("/"))];
     var newentry = new Firebase('https://thistle-io.firebaseio.com/'+roomID) //Do I need to create a entry further in or just stop at thistle.io/?//
     var defaultmessage = newentry.push()
-        defaultmessage.set({'username':user, 'in':'Welcome to this unnecessary console'});
+        defaultmessage.set({'username':user, '0':'Welcome to this unnecessary console'});
     
     
     // add terminal console to the added li
     
     // Record the current time immediately, and queue an event to
     // record the time at which the user disconnects.
-    /*
+    
     var sessionsRef = new Firebase('https://samplechat.firebaseio-demo.com/sessions/');
     var mySessionRef = sessionsRef.push();
     mySessionRef.onDisconnect().update({ endedAt: Firebase.ServerValue.TIMESTAMP });
     mySessionRef.update({ startedAt: Firebase.ServerValue.TIMESTAMP });
-    */
-    //have a latest and a list of their previous commands, so when they add a new push 
+    
+    //have a latest and a list of their previous commands, so when they add a new push
+    // this will probably need a for each statment
+    datasnapshot.foreach(function(childsnapshot){
+        var people = 
+    })
+    //Try to get the values or children of snapshot at the roomID specified path level
+    //I don't want to push these values into the database, since they should alreay be there, I want to display
+    //them alongside the terminal that I created for the specifc user that came onto the site
+    //However I need to exclude members that are the same as the cureent user to keep track of their other statements
+    //Each of those  other statements needs to have its own list I shouldn't worry about the position of the list yet
+    
+    
 });
     </script>
 </body>
