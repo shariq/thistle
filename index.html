@@ -16,31 +16,64 @@
     </style>
     
 </head>
-
+<!-->Use a bunch of Divs instead of fucking headers<!-->
 <body>
+    <h1>
+        Thistle
+    </h1>
+    <div class= "table">
+        <ul>
+            <li>Coffee</li>
+        </ul>
+    </div>
     <script>
     
-/*Make jQueury debuggable or whatever
+//Make jQueury debuggable or whatever
 $( document ).ready(function() {
     console.log( "ready!" );
+    
+    //I need redo the redirect so that the member the url 
+    function makeid() {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for( var i=0; i < 5; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        return text;
+    };
+    //Ensure that they navigate to the correct website I do actually have a function for this
+    if (window.location == "http://thistle.io") debugger;{
+        window.location = "http://thistle.io/"+makeid(); 
+    }
+    //Ask for Username
+    var user=prompt("Enter your name");
+    /* this needs to be done in conjugction with
+     * adding a new user to the "room" */
+    
+    //consider using prepend.to//
+    var newuser = new Firebase('https://thistle-io.firebaseio.com/'); //(find a way to add the elemnt into the on('child_added') for whatever reason I am getting an error)
+    newuser.on('child_added', function(snapshot){
+        debugger;
+        alert('NEVER GOES IN HERE');
+        var snapshotvalue=snapshot.val();
+        $("#header ul").prepend('<li></li>');
+    });
+    // add terminal console to the added li
+    
+    
+    
+    // Record the current time immediately, and queue an event to
+    // record the time at which the user disconnects.
+    /*
+    var sessionsRef = new Firebase('https://samplechat.firebaseio-demo.com/sessions/');
+    var mySessionRef = sessionsRef.push();
+    mySessionRef.onDisconnect().update({ endedAt: Firebase.ServerValue.TIMESTAMP });
+    mySessionRef.update({ startedAt: Firebase.ServerValue.TIMESTAMP });
+    */
+    //have a latest and a list of their previous commands, so when they add a new push 
 });
 
 //Random url generator
-function makeid()
-{
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for( var i=0; i < 5; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
-}
-//Ensure that they navigate to the correct website I do actually have a function for this
-var window = window.location
-if (window == "http://thistle.io") {
-    window.location.replace("http://thistle.io"+makeid); */
 
-//Ask for Username
-var user=prompt("Enter your name");
 
     </script>
 </body>
