@@ -5,6 +5,11 @@ import copy
 import firebase
 from firebase import firebaseURL
 
+firebaseWriters = {}
+# if this is just None it's hard to deal with scoping issues...
+# don't want to declare a global so just referencing as array
+terminalIdentifiers = [None]
+
 def timestamp():
     return str(int(time.time() * 1000))
 
@@ -13,7 +18,7 @@ class firebaseWriter:
         self.terminalIdentifier = terminalIdentifier
     def write(self, s):
         for l in s.splitlines():
-            firebase.patch(firebaseLocation + roomIdentifier + '/' + self.terminalIdentifier + '/out/' + timestamp, s)
+            firebase.put(firebaseLocation + roomIdentifier + '/' + self.terminalIdentifier + '/out/' + timestamp(), s)
         # firebase stuff using self.terminalIdentifier and firebaseLocation and time.time()
     def writelines(self, l):
         for s in l:
@@ -26,12 +31,12 @@ def getFirebaseWriter(terminalIdentifier):
 
 def onStatement(terminalIdentifier, statement):
     adjustedGlobals = copy.copy(globals())
-    adjustedGlobals['sys']['stdout'] = getFirebaseWriter(terminalIdentifer)
-    adjustedGlobals['sys']['stderr'] = getFirebaseWriter(terminalIdentifer)
+    adjustedGlobals['sys'].stdout = getFirebaseWriter(terminalIdentifier)
+#    adjustedGlobals['sys'].stderr = getFirebaseWriter(terminalIdentifier)
     exec(statement, adjustedGlobals)
+    sys.stdout = sys.__stdout__
 
 def handleFirebaseEvent(message):
-    print message
     if type(message) is tuple:
         path, data = message
     elif type(message) is dict:
@@ -39,56 +44,44 @@ def handleFirebaseEvent(message):
         data = message['data']
     else:
         return
-    print '\nPATH: '
-    print path
-    print ''
-    print 'MESSAGE: '
-    print message
-    print ''
     if path == '/':
         if data is not None:
             for terminalIdentifier in data.keys():
                 handleFirebaseEvent(('/'+terminalIdentifier, data[terminalIdentifier]))
         return
     terminalIdentifier = path.split('/')[1]
-    print 'TERMINAL IDENTIFIER: '
-    print terminalIdentifier
     # check if user is being removed; remove from user set;
     # if user set is empty, raise CTRL+C (this will make out null)
     # then return
     if path.count('/') == 1 and data is None:
         # user is being removed!
-        print 'USER BEING REMOVED'
-        if terminalIdentifiers:
-            terminalIdentifiers.remove(user)
-        elif terminalIdentifiers is None:
+        if type(terminalIdentifiers[0]) is set:
+            terminalIdentifiers[0].remove(user)
+        elif terminalIdentifiers[0] is None:
             return
-        elif not terminalIdentifiers:
-            print 'ALL USERS REMOVED'
+        elif not terminalIdentifiers[0]:
             raise KeyboardInterrupt
-    if terminalIdentifiers is None:
-        terminalIdentifiers = set([terminalIdentifier])
-        print 'initialized terminal identifiers'
+    if terminalIdentifiers[0] is None:
+        terminalIdentifiers[0] = set([terminalIdentifier])
     # check if write is to out; if so, ignore
     if path.count('/') == 1:
-        print 'a'
-        if 'in' in map(lower, data.keys()):
-            print 'b'
-            sort_me = data['in'].items()
-            # sorted(lambda x:x[0] or x:-x[0]???
-            for statement in map(lambda x:x[1],
-                    sorted(lambda x:x[0], sort_me)):
-                onStatement(terminalIdentifier, statement)
+        if 'in' in map(lambda x:x.lower(), data.keys()):
+            if type(data['in']) is dict:
+                sort_me = data['in'].items()
+                # sorted(lambda x:x[0] or x:-x[0]???
+                for statement in map(lambda x:x[1],
+                        sorted(lambda x:x[0], sort_me)):
+                    onStatement(terminalIdentifier, statement)
+            elif type(data['in']) is list:
+                for statement in data['in']:
+                    onStatement(terminalIdentifier, statement)
     elif path.split('/')[2].lower() == 'in':
-        print 'c'
         if path.count('/') == 2:
-            print 'd'
             sort_me = data.items()
             for statement in map(lambda x:x[1],
                     sorted(lambda x:x[0], sort_me)):
                 onStatement(terminalIdentifier, statement)
         elif path.count('/') == 3:
-            print 'e'
             onStatement(terminalIdentifier, statement)
     # this should be sending an input
     # grab the input and run onStatement on it; possibly in a thread
@@ -100,8 +93,6 @@ if __name__ == '__main__':
         sys.exit(-1)
     firebaseLocation = firebaseURL(sys.argv[1]).replace('.json','') #ends with /
     roomIdentifier = sys.argv[2]
-    firebaseWriters = {}
-    terminalIdentifiers = None
     # any stuff in in that hasn't been run is obviously not run
     firebaseSubscriber = firebase.subscriber(firebaseLocation + roomIdentifier + '.json', handleFirebaseEvent)
     firebaseSubscriber.start()
