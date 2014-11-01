@@ -49,6 +49,8 @@ class RemoteThread(threading.Thread):
                 self.function(msg_data)
         except socket.error:
             pass    # this can happen when we close the stream
+        except KeyboardInterrupt:
+            self.close()
     def close(self):
         if self.sse:
             self.sse.close()
@@ -57,7 +59,10 @@ def firebaseURL(URL):
     if '.' not in URL.lower():
         return 'https://'+URL+'.firebaseio.com/.json'
     if '.json' not in URL.lower():
-        return URL + '.json'
+        if '/' != URL[-1]:
+            return URL + '/.json'
+        else:
+            return URL + '.json'
     return URL
 
 class subscriber:
@@ -67,6 +72,8 @@ class subscriber:
         self.remote_thread.start()
     def stop(self):
         self.remote_thread.close()
+        self.remote_thread.join()
+    def wait(self):
         self.remote_thread.join()
 
 def put(URL, msg):
