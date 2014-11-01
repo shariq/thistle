@@ -3,7 +3,7 @@
 <html>
     
 <head>
-    <title> Thistle </title>
+    <title>Thistle</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <script src="jquery-2.1.1.min.js"></script>
     <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
@@ -11,7 +11,7 @@
     <style type="text/css">
         body {
          font-family: monospace;
-         font-size: 10pt;
+         font-size: 30pt;
         }
     </style>
     
@@ -21,10 +21,13 @@
     <div></div>
     <input>
     <script>
-//Make jQueury debuggable or whatever
+/*Make jQueury debuggable or whatever
 $( document ).ready(function() {
     console.log( "ready!" );
 });
+
+//Username
+var user=prompt("Enter your name");
 //Random url generator
 function makeid()
 {
@@ -35,52 +38,11 @@ function makeid()
     return text;
 }
 //Ensure that they navigate to the correct website I do actually have a function for this
-if (window.location == "thistle.io") {
+var window = window.location
+if (window == "http://thistle.io") {
     window.location.replace("http://thistle.io"+makeid);
-}
-
-// Record the connection and disconnectiong times of the user
-var sessionsRef = new Firebase('https://samplechat.firebaseio-demo.com/sessions/');
-var mySessionRef = sessionsRef.push();
-mySessionRef.onDisconnect().update({ endedAt: Firebase.ServerValue.TIMESTAMP });
-mySessionRef.update({ startedAt: Firebase.ServerValue.TIMESTAMP });
-//Convert timestamp into seconds//
-mySessionRef = mySessionRef *1000
-
-
-var postsRef = new Firebase("https://uwyfjh6p0t4.firebaseio-demo.com")
-// Attach a callback to read the data at our posts reference
-    postsRef.on('value', function (snapshot) {
-     console.log(snapshot.val());
-        },
-function (errorObject) {
-  console.log('The read failed: ' + errorObject.code);
-});
-
-// Get the data on a post that has been removed
-postsRef.on('child_removed', function (snapshot) {
-  var deletedPost = snapshot.val();
-  console.log('The blog post titled' + deletedPost.title + ' has been deleted');
-});
 
 //define backend data entry//
-
-var Datared = new Firebase('https://uwyfjh6p0t4.firebaseio-demo.com/');
-      $('#messageInput').keypress(function (e) {
-        if (e.keyCode == 13) {
-          var name = $('#nameInput').val();
-          var text = $('#messageInput').val();
-          Datared.push({name: name, text: text});
-          $('#messageInput').val('');
-        }
-      });
-//I think this is when someone is added to the "room"//
-
-Datared.on('child_added', function(snapshot) {
-        var message = snapshot.val();
-        displayChatMessage(message.name, message.text);
-    });
-
 
     </script>
 </body>
