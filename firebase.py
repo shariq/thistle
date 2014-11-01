@@ -46,18 +46,7 @@ class RemoteThread(threading.Thread):
                 msg_data = json.loads(msg.data)
                 if msg_data is None:    # keep-alives
                     continue
-                path = msg_data['path']
-                data = msg_data['data']
-                if path == '/':
-                    # initial update
-                    if data:
-                        keys = data.keys()
-                        keys.sort()
-                        for k in keys:
-                            function(data[k])
-                else:
-                    # must be a push ID
-                    function(data)
+                self.function(msg_data)
         except socket.error:
             pass    # this can happen when we close the stream
     def close(self):
