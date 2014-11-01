@@ -13,7 +13,6 @@
          font-family: monospace;
          font-size: 10pt;
         }
-
     </style>
     
 </head>
@@ -22,6 +21,10 @@
     <div></div>
     <input>
     <script>
+//Make jQueury debuggable or whatever
+$( document ).ready(function() {
+    console.log( "ready!" );
+});
 //Random url generator
 function makeid()
 {
@@ -31,11 +34,20 @@ function makeid()
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     return text;
 }
-//Ensure that they navigate to the correct website
-window.location.replace("http://thistle.io/"+makeid);
+//Ensure that they navigate to the correct website I do actually have a function for this
+if (window.location == "http://thistle.io") {
+    window.location.replace("http://thistle.io"+makeid);
+}
+
+// Record the connection and disconnectiong times of the user
+var sessionsRef = new Firebase('https://samplechat.firebaseio-demo.com/sessions/');
+var mySessionRef = sessionsRef.push();
+mySessionRef.onDisconnect().update({ endedAt: Firebase.ServerValue.TIMESTAMP });
+mySessionRef.update({ startedAt: Firebase.ServerValue.TIMESTAMP });
+//Convert timestamp into seconds//
+mySessionRef = mySessionRef *1000
 
 
-//
 var postsRef = new Firebase("https://uwyfjh6p0t4.firebaseio-demo.com")
 // Attach an asynchronous callback to read the data at our posts reference
     postsRef.on('value', function (snapshot) {
@@ -44,10 +56,6 @@ var postsRef = new Firebase("https://uwyfjh6p0t4.firebaseio-demo.com")
 function (errorObject) {
   console.log('The read failed: ' + errorObject.code);
 });
-
-// Get a reference to our posts//
-
-var postsRef = new Firebase("https://uwyfjh6p0t4.firebaseio-demo.com");
 
 // Get the data on a post that has been removed
 postsRef.on('child_removed', function (snapshot) {
@@ -73,14 +81,7 @@ Datared.on('child_added', function(snapshot) {
         displayChatMessage(message.name, message.text);
     });
 
-//timestamp need to add to child added component//
-var milliseconds = (new Date).getTime();
-milliseconds = milliseconds *1000
-println("milliseconds")
+
     </script>
-
-
-
-
 </body>
 </html>
