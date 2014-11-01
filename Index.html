@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html>
+    
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <script src="jquery-2.1.1.min.js"></script>
+    <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+    <title> Thistle </title>
+    <style type="text/css"></style>
+    
+</head>
+
+<body>
+    <div></div>
+    <input>
+    <script>
+//Random url generator
+function makeid()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
+
+//Ensure that they navigate to the correct website
+window.location.replace("http://thistle.io/" +");
+//
+var postsRef = new Firebase("https://thistle-io.firebaseio.com//web/saving-data/fireblog/posts")
+// Attach an asynchronous callback to read the data at our posts reference
+postsRef.on('value', function (snapshot) {
+  console.log(snapshot.val());
+}, function (errorObject) {
+  console.log('The read failed: ' + errorObject.code);
+});
+
+
+//define backend data entry
+var Datared = new Firebase('https://uwyfjh6p0t4.firebaseio-demo.com/');
+      $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+          var name = $('#nameInput').val();
+          var text = $('#messageInput').val();
+          Datared.push({name: name, text: text});
+          $('#messageInput').val('');
+        }
+      });
+//
+Datared.on('child_added', function(snapshot) {
+        var message = snapshot.val();
+        displayChatMessage(message.name, message.text);
+    });
+
+//timestamp//
+var milliseconds = (new Date).getTime();
+milliseconds = milliseconds *1000
+println("milliseconds")
+    </script>
+
+
+
+
+</body>
+</html>
