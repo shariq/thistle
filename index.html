@@ -8,6 +8,13 @@
     <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
     <title> Thistle </title>
     <style type="text/css"></style>
+    <style type="text/css">
+        body {
+         font-family: monospace;
+         font-size: 10pt;
+        }
+
+    </style>
     
 </head>
 
@@ -24,20 +31,32 @@ function makeid()
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     return text;
 }
-
 //Ensure that they navigate to the correct website
-window.location.replace("http://thistle.io/" +");
+window.location.replace("http://thistle.io/"+text);
+
+
 //
-var postsRef = new Firebase("https://thistle-io.firebaseio.com//web/saving-data/fireblog/posts")
+var postsRef = new Firebase("https://uwyfjh6p0t4.firebaseio-demo.com")
 // Attach an asynchronous callback to read the data at our posts reference
-postsRef.on('value', function (snapshot) {
-  console.log(snapshot.val());
-}, function (errorObject) {
+    postsRef.on('value', function (snapshot) {
+     console.log(snapshot.val());
+        },
+function (errorObject) {
   console.log('The read failed: ' + errorObject.code);
 });
 
+// Get a reference to our posts//
 
-//define backend data entry
+var postsRef = new Firebase("https://uwyfjh6p0t4.firebaseio-demo.com");
+
+// Get the data on a post that has been removed
+postsRef.on('child_removed', function (snapshot) {
+  var deletedPost = snapshot.val();
+  console.log('The blog post titled' + deletedPost.title + ' has been deleted');
+});
+
+//define backend data entry//
+
 var Datared = new Firebase('https://uwyfjh6p0t4.firebaseio-demo.com/');
       $('#messageInput').keypress(function (e) {
         if (e.keyCode == 13) {
@@ -47,13 +66,14 @@ var Datared = new Firebase('https://uwyfjh6p0t4.firebaseio-demo.com/');
           $('#messageInput').val('');
         }
       });
-//
+//I think this is when someone is added to the "room"//
+
 Datared.on('child_added', function(snapshot) {
         var message = snapshot.val();
         displayChatMessage(message.name, message.text);
     });
 
-//timestamp//
+//timestamp need to add to child added component//
 var milliseconds = (new Date).getTime();
 milliseconds = milliseconds *1000
 println("milliseconds")
