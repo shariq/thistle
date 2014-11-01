@@ -1,8 +1,8 @@
 import sys
 import time
 import threading
-import copy
 import firebase
+import traceback
 from firebase import firebaseURL
 
 firebaseWriters = {}
@@ -16,10 +16,15 @@ def timestamp():
 class firebaseWriter:
     def __init__(self, terminalIdentifier):
         self.terminalIdentifier = terminalIdentifier
+        self.buffer = ''
     def write(self, s):
-        for l in s.splitlines():
-            firebase.put(firebaseLocation + roomIdentifier + '/' + self.terminalIdentifier + '/out/' + timestamp(), s)
-        # firebase stuff using self.terminalIdentifier and firebaseLocation and time.time()
+        sys.__stdout__.write(s)
+        for c in s:
+            if c == '\n':
+                firebase.put(firebaseLocation + roomIdentifier + '/' + self.terminalIdentifier + '/out/' + timestamp(), self.buffer)
+                self.buffer = ''
+            else:
+                self.buffer += c
     def writelines(self, l):
         for s in l:
             self.write(s)
@@ -30,10 +35,13 @@ def getFirebaseWriter(terminalIdentifier):
     return firebaseWriters[terminalIdentifier]
 
 def onStatement(terminalIdentifier, statement):
-    adjustedGlobals = copy.copy(globals())
-    adjustedGlobals['sys'].stdout = getFirebaseWriter(terminalIdentifier)
-#    adjustedGlobals['sys'].stderr = getFirebaseWriter(terminalIdentifier)
-    exec(statement, adjustedGlobals)
+    print statement
+    sys.stdout = getFirebaseWriter(terminalIdentifier)
+    try:
+        exec(statement)
+    except:
+        print 'Exception caught.'
+        print traceback.format_exc().splitlines()[-1]+'\n'
     sys.stdout = sys.__stdout__
 
 def handleFirebaseEvent(message):
@@ -44,6 +52,8 @@ def handleFirebaseEvent(message):
         data = message['data']
     else:
         return
+    print 'PATH : ' + `path`
+    print 'DATA : ' + `data`
     if path == '/':
         if data is not None:
             for terminalIdentifier in data.keys():
@@ -65,24 +75,35 @@ def handleFirebaseEvent(message):
         terminalIdentifiers[0] = set([terminalIdentifier])
     # check if write is to out; if so, ignore
     if path.count('/') == 1:
+        print 'a'
         if 'in' in map(lambda x:x.lower(), data.keys()):
+            print 'b'
             if type(data['in']) is dict:
+                print 'c'
                 sort_me = data['in'].items()
                 # sorted(lambda x:x[0] or x:-x[0]???
                 for statement in map(lambda x:x[1],
                         sorted(lambda x:x[0], sort_me)):
+                    print 'd'
                     onStatement(terminalIdentifier, statement)
             elif type(data['in']) is list:
+                print 'e'
                 for statement in data['in']:
+                    print 'f'
+                    if statement is None:
+                        continue
                     onStatement(terminalIdentifier, statement)
     elif path.split('/')[2].lower() == 'in':
+        print 'g'
         if path.count('/') == 2:
+            print 'h'
             sort_me = data.items()
             for statement in map(lambda x:x[1],
                     sorted(lambda x:x[0], sort_me)):
                 onStatement(terminalIdentifier, statement)
-        elif path.count('/') == 3:
-            onStatement(terminalIdentifier, statement)
+        elif path.count('/') == 3 and type(data) is str:
+            print 'i'
+            onStatement(terminalIdentifier, data)
     # this should be sending an input
     # grab the input and run onStatement on it; possibly in a thread
 
