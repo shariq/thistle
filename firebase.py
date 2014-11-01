@@ -1,21 +1,13 @@
 # adapted from firebase/EventSource-Examples/python/chat.py
+
 '''
-Copyright 2014 Firebase, https://www.firebase.com/
+Example usage:
+S = firebase.subscriber(URL, print)
+firebase.patch(URL, data) # for updating some kv pairs
+firebase.push(URL, data) # for lists
+firebase.put(URL, data) # CAUTION! for replacing everything!
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
 '''
-
-# usage:
-# S = firebase.subscriber(URL, print)
-# firebase.push(URL, data)
 
 from sseclient import SSEClient
 from Queue import Queue
@@ -41,16 +33,6 @@ class ClosableSSEClient(SSEClient):
         # requests library to make this easier
         self.resp.raw._fp.fp._sock.shutdown(socket.SHUT_RDWR)
         self.resp.raw._fp.fp._sock.close()
-
-class PostThread(threading.Thread):
-    def __init__(self, outbound_queue):
-        self.outbound_queue = outbound_queue
-        super(PostThread, self).__init__()
-    def run(self):
-        while True:
-            URL, msg = self.outbound_queue.get()
-            to_post = json.dumps(msg)
-            requests.post(URL, data=to_post)
 
 class RemoteThread(threading.Thread):
     def __init__(self, URL, function):
@@ -83,6 +65,8 @@ class RemoteThread(threading.Thread):
             self.sse.close()
 
 def firebaseURL(URL):
+    if '.' not in URL.lower():
+        return 'https://'+URL+'.firebaseio.com/.json'
     if '.json' not in URL.lower():
         return URL + '.json'
     return URL
@@ -96,9 +80,20 @@ class subscriber:
         self.remote_thread.close()
         self.remote_thread.join()
 
-outbound_queue = Queue()
-post_thread = PostThread(outbound_queue)
-post_thread.start()
+def put(URL, msg):
+    to_post = json.dumps(msg)
+    response = requests.put(firebaseURL(URL), data = to_post)
+    if response.status_code != 200:
+        raise Exception(response.text)
 
-def push(URL, data):
-    outbound_queue.put((firebaseURL(URL), data))
+def push(URL, msg):
+    to_post = json.dumps(msg)
+    response = requests.post(firebaseURL(URL), data = to_post)
+    if response.status_code != 200:
+        raise Exception(response.text)
+
+def patch(URL, msg):
+    to_post = json.dumps(msg)
+    response = requests.patch(firebaseURL(URL), data = to_post)
+    if response.status_code != 200:
+        raise Exception(response.text)
