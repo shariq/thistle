@@ -9,14 +9,13 @@ body {
   font-family: monospace;
   font-size: 10pt;
 }
-
 p {
   margin: 0.5em;
 }
-
 a img {
   border: none;
 }
+.nobr{ white-space:nowrap; }
 
 .prompt, #output {
   width: 45em;
@@ -26,12 +25,6 @@ a img {
   margin: 0.5em;
   padding: 0.5em;
   padding-right: 0em;
-  overflow-x: hidden;
-}
-
-#toolbar {
-  margin-left: 0.5em;
-  padding-left: 0.5em;
 }
 
 #caret {
@@ -40,7 +33,6 @@ a img {
   padding-right: 0px;
   border-right: 0px;
 }
-
 #statement {
   width: 43em;
   margin-left: -1em;
@@ -49,63 +41,47 @@ a img {
   background-position: top right;
   background-repeat: no-repeat;
 }
-
+#social{
+  height: 29.4em;
+  width: 15em;
+  background-position: top
+  background-repeat: no-repeat;
+}
 .processing {
   background-image: url("/static/spinner.gif");
 }
-
 #ajax-status {
   font-weight: bold;
 }
-
 .message {
   color: #8AD;
   font-weight: bold;
   font-style: italic;
 }
-
 .error {
   color: #F44;
 }
-
 .username {
   font-weight: bold;
 }
 
 </style>
-<script type="text/javascript" src="chrome-extension://bfbmjmiodbnnpllbbbfblcplfjjepjdn/js/injected.js"></script></head>
+</head>
 
-<body data-feedly-mini="yes">
+<body>
 
-<p> Interactive server-side Python shell for
-<a href="http://code.google.com/appengine/">Google App Engine</a>.
-(<a href="http://code.google.com/p/google-app-engine-samples/downloads/list">source</a>)
-</p>
-
-<textarea id="output" rows="22" readonly="readonly">Google App Engine/1.9.15
-Python 2.5.2 (r252:60911, Oct  4 2012, 10:20:32) 
-[GCC 4.3.1]
-</textarea>
-
+<textarea id="output" rows="22" readonly="readonly">Welcome to the simultaneous python Shell </textarea>
+<textarea class="prompt" id="social" rows="4" onkeypress="return shell.onPromptKeyPress(event);"></textarea>
 <form id="form" action="http://shell.appspot.com/shell.do" method="get">
-  <nobr>
-  <textarea class="prompt" id="caret" readonly="readonly" rows="4" onfocus="document.getElementById(&#39;statement&#39;).focus()">&gt;&gt;&gt;</textarea>
+  <span class=nobr>
+  <textarea class="prompt" id="caret" readonly="readonly" rows="4" onfocus="document.getElementById(&#39;statement&#39;).focus()">
+    &gt;&gt;&gt;</textarea>
   <textarea class="prompt" name="statement" id="statement" rows="4" onkeypress="return shell.onPromptKeyPress(event);"></textarea>
-  </nobr>
+  </span>
   <input type="hidden" name="session" value="agVzaGVsbHITCxIHU2Vzc2lvbhjT3_TenooGDA">
   <input type="submit" style="display: none">
 </form>
 
-<p id="ajax-status"></p>
-
-<p id="toolbar">
-
-  <a href="https://www.google.com/accounts/ServiceLogin?service=ah&passive=true&continue=https://appengine.google.com/_ah/conflogin%3Fcontinue%3Dhttp://shell.appspot.com/%253Fsession%253DagVzaGVsbHITCxIHU2Vzc2lvbhjT3_TenooGDA&ltmpl=gm&shdf=ChELEgZhaG5hbWUaBVNoZWxsDBICYWgiFAspK-F9ZeX1g7CZZdEOc6wBKBC0KAEyFP-IpxuQmMkMxOK8IXeyP3yh6XGV">log in</a>
-
- | Ctrl-Up for history | Shift-Enter for newline
- | <a href="http://code.google.com/appengine/">
-      <img src="./Interactive Shell_files/appengine_button_noborder.gif" style="vertical-align: middle"></a>
-</p>
 
 <script type="text/javascript">
 document.getElementById('statement').focus();
