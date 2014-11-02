@@ -15,5 +15,7 @@ ADD ./firebase.py ~/
 ADD ./firebase.py .
 ADD ./thistle-io.sh ~/
 ADD ./thistle-io.sh .
+RUN chmod +x ./thistle-io.sh
+#RUN chmod +x ~/thistle-io.sh
 
-ENTRYPOINT ~/thistle-io.sh
+ENTRYPOINT ["./thistle-io.sh"]
