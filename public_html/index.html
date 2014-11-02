@@ -79,92 +79,65 @@
       <textarea name="other_input" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
         </span>
         <form id="messagesDiv">
-          <script type="text/javascript">
-            document.getElementById('messageInput').focus();
-            </script>
           <span class=nobr>
-          <textarea name="caret" class="prompt" id="caret" readonly="readonly" rows="4" onfocus="document.getElementById(messageInput).focus()">
+          <textarea name="caret" class="prompt" id="caret" readonly="readonly" rows="4">
             &gt;&gt;&gt;</textarea>
-          <textarea class="prompt" name="statement" id="messageInput" rows="4" placeholder='Message' onkeypress="return shell.onPromptKeyPress(event);"></textarea>
+          <textarea class="prompt" name="statement" id="messageInput" rows="4" placeholder='Message'></textarea>
           </span>
            </form>
         <input type="hidden" name="session" value="agVzaGVsbHITCxIHU2Vzc2lvbhjT3_TenooGDA"></input>
         <input type="submit" style="display: none"></input>
     
-    
-    
-    
     <script>
     var userName = prompt("Username: ");
-       //var Datared = new Firebase('https://uwyfjh6p0t4.firebaseio-demo.com/');
-       var Datared = new Firebase('https://thistle-io.firebaseio.com/');
+    //var roomURL = window.location.pathname.replace("/", "").replace(".", "");
+    var roomURL = 'ABCHUXU';
+      if (roomURL == "") {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for( var i=0; i < 8; i++ )
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+        window.location = 'http://thistle.io/'+text;
+      }
+    $(document).ready( function() {
+      var roomFire = new Firebase('https://thistle-io.firebaseio.com/'+roomURL);
+      roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set("print 'welcome!'");
+      
       $('#messageInput').keypress(function (e) {
         if (e.keyCode == 13) {
-          //var name = $('#nameInput').val();
+          $('#messageInput').val('');
           var text = $('#messageInput').val();
           if (text == "") {
             return;
           }
-          // username and roomURL need to be filled up
-          var roomURL = window.location.pathname;
-          if (roomURL == "") {
-            var text = "";
-            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            for( var i=0; i < 5; i++ )
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-            window.location = 'http://thistle.io/'+text;
-          }
-          //var userName = 'user1';
-          var roomRef = Datared.child(roomURL);
-          roomRef.child(userName).child('in').child((new Date()).getTime().toString()).set(text);
-          //debugger;
-//          roomRef.update(updateVal);
-          Datared.push({userName: userName, text: text });
-          $('#messageInput').val('');
-
+          roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set(text);
         }
-    </script>
-    <script>
-    var userName = prompt("Username: ");
-    document.onload = function() {
-       //var Datared = new Firebase('https://uwyfjh6p0t4.firebaseio-demo.com/');
-       var Datared = new Firebase('https://thistle-io.firebaseio.com/');
-      $('#messageInput').keypress(function (e) {
-        if (e.keyCode == 13) {
-          //var name = $('#nameInput').val();
-          var text = $('#messageInput').val();
-          if (text == "") {
-            return;
-          }
-          // username and roomURL need to be filled up
-          var roomURL = window.location.pathname.replace("/", "").replace(".", "");
-          if (roomURL == "") {
-            var text = "";
-            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            for( var i=0; i < 5; i++ )
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-            window.location = 'http://thistle.io/'+text;
-          }
-          //var userName = 'user1';
-          var roomRef = Datared.child(roomURL);
-          roomRef.child(userName).child('in').child((new Date()).getTime().toString()).set(text);
-          //debugger;
-//          roomRef.update(updateVal);
-          Datared.push({userName: userName, text: text });
-          $('#messageInput').val('');
+      });
+      
+      roomFire.on('child_added', function(snapshot) {
+        var otherUsername = snapshot.name();
+        snapshot.child('in').forEach(function(childSnapshot) {
+          var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
+          var messageStuff = childSnapshot.val();
+          displayInMessage(timeStampString, otherUsername, messageStuff);
+        });
+        snapshot.child('out').forEach(function(childSnapshot) {
+          var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
+          var messageStuff = childSnapshot.val();
+          displayOutMessage(timeStampString, otherUsername, messageStuff);
+        });
+      });
 
-        }  
-        
-      });
-      Datared.on('child_added', function(snapshot) {
-        var message = snapshot.val();
-        displayChatMessage(message.userName, message.text);
-      });
-      function displayChatMessage(userName, text  ) {
-        $('<div/>').text(text).prepend($('<em/>').text(userName+': ')).appendTo($('#messagesDiv'));
+      function displayInMessage(timeStampString, userName, text ) {
+        $('<div/>').text(text).prepend($('<em/>').text(timeStampString + ' : ' + userName+'> ')).appendTo($('#messagesDiv'));
         $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
       };
-    };
+      
+      function displayOutMessage(timeStampString, userName, text ) {
+        $('<div/>').text(text).prepend($('<em/>').text(timeStampString + ' : ' + userName+'> ')).appendTo($('#messagesDiv'));
+        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+    });
     </script>
   </body>
 </html>
