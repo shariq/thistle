@@ -4,8 +4,12 @@ import threading
 import firebase
 import traceback
 from firebase import firebaseURL
+from Queue import Queue
+
+statementQueue = Queue()
 
 firebaseWriters = {}
+
 # if this is just None it's hard to deal with scoping issues...
 # don't want to declare a global so just referencing as array
 terminalIdentifiers = [None]
@@ -18,7 +22,6 @@ class firebaseWriter:
         self.terminalIdentifier = terminalIdentifier
         self.buffer = ''
     def write(self, s):
-        sys.__stdout__.write(s)
         for c in s:
             if c == '\n':
                 firebase.put(firebaseLocation + roomIdentifier + '/' + self.terminalIdentifier + '/out/' + timestamp(), self.buffer)
@@ -35,13 +38,22 @@ def getFirebaseWriter(terminalIdentifier):
     return firebaseWriters[terminalIdentifier]
 
 def onStatement(terminalIdentifier, statement):
-    sys.stdout = getFirebaseWriter(terminalIdentifier)
-    try:
-        exec(statement)
-    except:
-        sys.stdout.write('Exception caught.\n')
-        sys.stdout.write(traceback.format_exc().splitlines()[-1]+'\n')
-    sys.stdout = sys.__stdout__
+    statementQueue.put((terminalIdentifier, statement))
+
+def evalexecThread():
+    while True:
+        try:
+            terminalIdentifier, statement = statementQueue.get()
+            sys.stdout = getFirebaseWriter(terminalIdentifier)
+        except:
+            continue
+        try:
+            print eval(statement)
+        except SyntaxError:
+            exec(statement)
+        except:
+            sys.stdout.write('Exception caught.\n')
+            sys.stdout.write(traceback.format_exc().splitlines()[-1]+'\n')
 
 def handleFirebaseEvent(message):
     if type(message) is tuple:
@@ -51,8 +63,6 @@ def handleFirebaseEvent(message):
         data = message['data']
     else:
         return
-    print 'PATH : '+`path`
-    print 'DATA : '+`data`
     if path == '/':
         if data is not None:
             for terminalIdentifier in data.keys():
@@ -79,7 +89,7 @@ def handleFirebaseEvent(message):
                 sort_me = data['in'].items()
                 # sorted(lambda x:x[0] or x:-x[0]???
                 for statement in map(lambda x:x[1],
-                        sorted(lambda x:x[0], sort_me)):
+                        sorted(sort_me, key = lambda x:x[0])):
                     onStatement(terminalIdentifier, statement)
             elif type(data['in']) is list:
                 for statement in data['in']:
@@ -90,10 +100,10 @@ def handleFirebaseEvent(message):
         if path.count('/') == 2:
             sort_me = data.items()
             for statement in map(lambda x:x[1],
-                    sorted(lambda x:x[0], sort_me)):
+                    sorted(sort_me, key = lambda x:x[0])):
                 onStatement(terminalIdentifier, statement)
-        elif path.count('/') == 3 and type(data) is str:
-            onStatement(terminalIdentifier, data)
+        elif path.count('/') == 3:
+            onStatement(terminalIdentifier, str(data))
     # this should be sending an input
     # grab the input and run onStatement on it; possibly in a thread
 
@@ -106,6 +116,8 @@ if __name__ == '__main__':
     roomIdentifier = sys.argv[2]
     # any stuff in in that hasn't been run is obviously not run
     firebaseSubscriber = firebase.subscriber(firebaseLocation + roomIdentifier + '.json', handleFirebaseEvent)
+    theActualEvalexecThread = threading.Thread(target = evalexecThread)
+    theActualEvalexecThread.daemon = True
+    theActualEvalexecThread.start()
     firebaseSubscriber.start()
     firebaseSubscriber.wait()
-
