@@ -58,6 +58,7 @@ def evalexecThread():
         except:
             sys.stdout.write('Exception caught.\n')
             sys.stdout.write(traceback.format_exc().splitlines()[-1]+'\n')
+        sys.stdout = sys.__stdout__
     evalexecThread()#just in case user breaks out of while true
 
 def handleFirebaseEvent(message):
