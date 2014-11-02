@@ -2,8 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> </meta>
-    <title> Interactive Shell </title>
-    <script type="text/javascript" src="./Interactive Shell_files/shell.js"></script>
+    <title> Thistle </title>
     <style type="text/css"></style>
     <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
@@ -79,7 +78,7 @@
       <textarea name="all_in_out" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
       <textarea name="other_input" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
         </span>
-        <form id="form" action="http://shell.appspot.com/shell.do" method="get">
+        <form id="messagesDiv">
           <script type="text/javascript">
             document.getElementById('messageInput').focus();
             </script>
@@ -156,7 +155,6 @@
 
         }  
         
-
       });
       Datared.on('child_added', function(snapshot) {
         var message = snapshot.val();
@@ -166,7 +164,6 @@
         $('<div/>').text(text).prepend($('<em/>').text(userName+': ')).appendTo($('#messagesDiv'));
         $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
       };
-
     };
     </script>
   </body>
