@@ -71,7 +71,6 @@ def handleFirebaseEventHelper(message):
         data = message['data']
     else:
         return
-    sys.stderr.write('PATH : '+`path`+'\nDATA : '+`data`+'\n')
     if path == '/':
         if data is not None:
             for terminalIdentifier in data.keys():
@@ -90,6 +89,8 @@ def handleFirebaseEventHelper(message):
         return
     if terminalIdentifiers[0] is None:
         terminalIdentifiers[0] = set([terminalIdentifier])
+    else:
+        terminalIdentifiers[0].add(terminalIdentifier)
     # check if write is to out; if so, ignore
     if path.count('/') == 1:
         if 'in' in map(lambda x:x.lower(), data.keys()):
