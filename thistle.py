@@ -56,6 +56,14 @@ def evalexecThread():
             sys.stdout.write(traceback.format_exc().splitlines()[-1]+'\n')
 
 def handleFirebaseEvent(message):
+    try:
+        handleFirebaseEventHelper(message)
+    except KeyboardInterrupt:
+        raise
+    except:
+        sys.stderr.write(traceback.format_exc())
+
+def handleFirebaseEventHelper(message):
     if type(message) is tuple:
         path, data = message
     elif type(message) is dict:
@@ -63,6 +71,7 @@ def handleFirebaseEvent(message):
         data = message['data']
     else:
         return
+    sys.stderr.write('PATH : '+`path`+'\nDATA : '+`data`+'\n')
     if path == '/':
         if data is not None:
             for terminalIdentifier in data.keys():
@@ -75,11 +84,10 @@ def handleFirebaseEvent(message):
     if path.count('/') == 1 and data is None:
         # user is being removed!
         if type(terminalIdentifiers[0]) is set:
-            terminalIdentifiers[0].remove(user)
-        elif terminalIdentifiers[0] is None:
-            return
-        elif not terminalIdentifiers[0]:
-            raise KeyboardInterrupt
+            terminalIdentifiers[0].remove(terminalIdentifier)
+            if not terminalIdentifiers[0]:
+                raise KeyboardInterrupt
+        return
     if terminalIdentifiers[0] is None:
         terminalIdentifiers[0] = set([terminalIdentifier])
     # check if write is to out; if so, ignore
