@@ -50,10 +50,15 @@ def evalexecThread():
         try:
             print eval(statement)
         except SyntaxError:
-            exec(statement)
+            try:
+                exec(statement)
+            except:
+                sys.stdout.write('Exception caught.\n')
+                sys.stdout.write(traceback.format_exc().splitlines()[-1]+'\n')
         except:
             sys.stdout.write('Exception caught.\n')
             sys.stdout.write(traceback.format_exc().splitlines()[-1]+'\n')
+    evalexecThread()#just in case user breaks out of while true
 
 def handleFirebaseEvent(message):
     try:
