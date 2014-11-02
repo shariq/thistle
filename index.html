@@ -14,87 +14,116 @@
          font-size: 3pt;
         }
     </style>
-    
+    <!-->Use a bunch of Divs instead of fucking headers<!-->
 </head>
-<!-->Use a bunch of Divs instead of fucking headers<!-->
+
 <body>
     <h1>
         Thistle
     </h1>
-    <div class= "table">
-        <ul>
-            <li>
-                
-            </li>
-        </ul>
-    </div>
-    <script>
     
-//Make jQueury debuggable or whatever
-$( document ).ready(function() {
-    console.log( "ready!" );
     
-    //I need redo the redirect so that the member the url
-    /*
-    function makeid() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for( var i=0; i < 5; i++ )
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        return text;
-    };
-    //Ensure that they navigate to the correct website I do actually have a function for this
-    if (window.location == "http://thistle.io")
-    {
+        <div class= "table">
+            <ul>
+                <li>
+                    
+                </li>
+            </ul>
+        </div>
+        <script>
+        
+    //Make jQueury debuggable or whatever
+    $( document ).ready(function() {
+        console.log( "ready!" );
+        
+        //I need redo the redirect so that the member the url
+        
+        function makeid() {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            for( var i=0; i < 5; i++ )
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            return text;
+        };
+        //Ensure that they navigate to the correct website I do actually have a function for this
+        if (window.location == "http://thistle.io")
+        {
+            console.log()
+            debugger;
+            console.log()
+            window.location = "http://thistle.io/"+makeid(); 
+        }
+        //Ask for Username
+        var user=prompt("Enter your name");
+        /* this needs to be done in conjugction with
+         * adding a new user to the "room" */
+        
+        //consider using prepend.to//
+        var newuser = new Firebase('https://thistle-io.firebaseio.com/'); //(find a way to add the elemnt into the on('child_added') for whatever reason I am getting an error)
+        
+        newuser.on('child_added', function(snapshot){
+            debugger;
+            console.log('NEVER GOES IN HERE');
+            var snapshotvalue=snapshot.val();
+            $("<li class='slideshit'>"+a.shit+"</li>").prependTo("#");;
+        });
+        
+        </script>
+        
+        <div class="shitlist">
+                <ul id="table">
+                    <li class="" style="display: list-item;">the name of this site</li>
+                </ul>
+                    <script>myRootRef.endAt().limit(16).on('child_added', function(snapshot){
+                        debugger;
+                            var message = snapshot.name(), a = snapshot.val();
+                            $("<li class='slideshit'>"+a.shit+"</li>").prependTo("#table");
+                            $('.slideshit').hide();
+                            $('.slideshit').slideDown();
+                            $('.slideshit').removeClass('slideshit');
+                            });
+                    </script>
+        </div>
+        
+        
+        <script>
+        
+        
+        //If this person gave use some random  URL then we want to create a key value to store in the database
+        var roomID = document.URL.split("/")[length(document.URL.split("/"))];
+        var newentry = new Firebase('https://thistle-io.firebaseio.com/'+roomID) //Do I need to create a entry further in or just stop at thistle.io/?//
+        var defaultmessage = newentry.push()
+            defaultmessage.set({'username':user, '0':'Welcome to this unnecessary console'});
+        
+        
+        // add terminal console to the added li
+        
+        // Record the current time immediately, and queue an event to
+        // record the time at which the user disconnects.
+        
+        var sessionsRef = new Firebase('https://samplechat.firebaseio-demo.com/sessions/');
+        var mySessionRef = sessionsRef.push();
+        mySessionRef.onDisconnect().update({ endedAt: Firebase.ServerValue.TIMESTAMP });
+        mySessionRef.update({ startedAt: Firebase.ServerValue.TIMESTAMP });
+        
+        
+        //have a latest and a list of their previous commands, so when they add a new push
+        // this will probably need a for each statment
+       datasnapshot.forEach(function(childSnapshot){
         debugger;
-        window.location = "http://thistle.io/"+makeid(); 
-    }
-    */
-    //Ask for Username
-    var user=prompt("Enter your name");
-    /* this needs to be done in conjugction with
-     * adding a new user to the "room" */
-    
-    //consider using prepend.to//
-    var newuser = new Firebase('https://thistle-io.firebaseio.com/'); //(find a way to add the elemnt into the on('child_added') for whatever reason I am getting an error)
-    
-    newuser.on('child_added', function(snapshot){
-        debugger;
-        console.log('NEVER GOES IN HERE');
-        var snapshotvalue=snapshot.val();
-        $("#header ul").prepend('<li></li>');
+            var people = childSnapshot.name();
+            var peopledata = childSnapshot.val();
+        })
+        var numUsers = peopledata.length
+        for(var x = 0; x < numUsers; != user){
+          peopledata = 
+        }
+        //Try to get the values or children of snapshot at the roomID specified path level
+        //I don't want to push these values into the database, since they should alreay be there, I want to display
+        //them alongside the terminal that I created for the specifc user that came onto the site
+        //However I need to exclude members that are the same as the cureent user to keep track of their other statements
+        //Each of those  other statements needs to have its own list I shouldn't worry about the position of the list yet
     });
-    
-    //If this person gave use some random  URL then we want to create a key value to store in the database
-    var roomID = document.URL.split("/")[length(document.URL.split("/"))];
-    var newentry = new Firebase('https://thistle-io.firebaseio.com/'+roomID) //Do I need to create a entry further in or just stop at thistle.io/?//
-    var defaultmessage = newentry.push()
-        defaultmessage.set({'username':user, '0':'Welcome to this unnecessary console'});
-    
-    
-    // add terminal console to the added li
-    
-    // Record the current time immediately, and queue an event to
-    // record the time at which the user disconnects.
-    
-    var sessionsRef = new Firebase('https://samplechat.firebaseio-demo.com/sessions/');
-    var mySessionRef = sessionsRef.push();
-    mySessionRef.onDisconnect().update({ endedAt: Firebase.ServerValue.TIMESTAMP });
-    mySessionRef.update({ startedAt: Firebase.ServerValue.TIMESTAMP });
-    
-    //have a latest and a list of their previous commands, so when they add a new push
-    // this will probably need a for each statment
-    datasnapshot.foreach(function(childsnapshot){
-        var people = 
-    })
-    //Try to get the values or children of snapshot at the roomID specified path level
-    //I don't want to push these values into the database, since they should alreay be there, I want to display
-    //them alongside the terminal that I created for the specifc user that came onto the site
-    //However I need to exclude members that are the same as the cureent user to keep track of their other statements
-    //Each of those  other statements needs to have its own list I shouldn't worry about the position of the list yet
-    
-    
-});
-    </script>
+        </script>
 </body>
 </html>
