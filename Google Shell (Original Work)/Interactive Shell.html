@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0025)http://shell.appspot.com/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title> Interactive Shell </title>
+<script type="text/javascript" src="./Interactive Shell_files/shell.js"></script><style type="text/css"></style>
+<style type="text/css">
+body {
+  font-family: monospace;
+  font-size: 10pt;
+}
+
+p {
+  margin: 0.5em;
+}
+
+a img {
+  border: none;
+}
+
+.prompt, #output {
+  width: 45em;
+  border: 1px solid silver;
+  background-color: #f5f5f5;
+  font-size: 10pt;
+  margin: 0.5em;
+  padding: 0.5em;
+  padding-right: 0em;
+  overflow-x: hidden;
+}
+
+#toolbar {
+  margin-left: 0.5em;
+  padding-left: 0.5em;
+}
+
+#caret {
+  width: 2.5em;
+  margin-right: 0px;
+  padding-right: 0px;
+  border-right: 0px;
+}
+
+#statement {
+  width: 43em;
+  margin-left: -1em;
+  padding-left: 0px;
+  border-left: 0px;
+  background-position: top right;
+  background-repeat: no-repeat;
+}
+
+.processing {
+  background-image: url("/static/spinner.gif");
+}
+
+#ajax-status {
+  font-weight: bold;
+}
+
+.message {
+  color: #8AD;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.error {
+  color: #F44;
+}
+
+.username {
+  font-weight: bold;
+}
+
+</style>
+<script type="text/javascript" src="chrome-extension://bfbmjmiodbnnpllbbbfblcplfjjepjdn/js/injected.js"></script></head>
+
+<body data-feedly-mini="yes">
+
+<p> Interactive server-side Python shell for
+<a href="http://code.google.com/appengine/">Google App Engine</a>.
+(<a href="http://code.google.com/p/google-app-engine-samples/downloads/list">source</a>)
+</p>
+
+<textarea id="output" rows="22" readonly="readonly">Google App Engine/1.9.15
+Python 2.5.2 (r252:60911, Oct  4 2012, 10:20:32) 
+[GCC 4.3.1]
+</textarea>
+
+<form id="form" action="http://shell.appspot.com/shell.do" method="get">
+  <nobr>
+  <textarea class="prompt" id="caret" readonly="readonly" rows="4" onfocus="document.getElementById(&#39;statement&#39;).focus()">&gt;&gt;&gt;</textarea>
+  <textarea class="prompt" name="statement" id="statement" rows="4" onkeypress="return shell.onPromptKeyPress(event);"></textarea>
+  </nobr>
+  <input type="hidden" name="session" value="agVzaGVsbHITCxIHU2Vzc2lvbhjT3_TenooGDA">
+  <input type="submit" style="display: none">
+</form>
+
+<p id="ajax-status"></p>
+
+<p id="toolbar">
+
+  <a href="https://www.google.com/accounts/ServiceLogin?service=ah&passive=true&continue=https://appengine.google.com/_ah/conflogin%3Fcontinue%3Dhttp://shell.appspot.com/%253Fsession%253DagVzaGVsbHITCxIHU2Vzc2lvbhjT3_TenooGDA&ltmpl=gm&shdf=ChELEgZhaG5hbWUaBVNoZWxsDBICYWgiFAspK-F9ZeX1g7CZZdEOc6wBKBC0KAEyFP-IpxuQmMkMxOK8IXeyP3yh6XGV">log in</a>
+
+ | Ctrl-Up for history | Shift-Enter for newline
+ | <a href="http://code.google.com/appengine/">
+      <img src="./Interactive Shell_files/appengine_button_noborder.gif" style="vertical-align: middle"></a>
+</p>
+
+<script type="text/javascript">
+document.getElementById('statement').focus();
+</script>
+
+
+
+
+<div id="feedly-mini" title="feedly Mini tookit"></div></body></html>
