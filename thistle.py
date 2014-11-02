@@ -113,10 +113,14 @@ def handleFirebaseEventHelper(message):
                     onStatement(terminalIdentifier, statement)
     elif path.split('/')[2].lower() == 'in':
         if path.count('/') == 2:
-            sort_me = data.items()
-            for statement in map(lambda x:x[1],
-                    sorted(sort_me, key = lambda x:x[0])):
-                onStatement(terminalIdentifier, statement)
+            if type(data) is dict:
+                sort_me = data.items()
+                for statement in map(lambda x:x[1],
+                        sorted(sort_me, key = lambda x:x[0])):
+                    onStatement(terminalIdentifier, statement)
+            if type(data) is list:
+                for statement in data:
+                    onStatement(terminalIdentifier, statement)
         elif path.count('/') == 3:
             onStatement(terminalIdentifier, str(data))
     # this should be sending an input
