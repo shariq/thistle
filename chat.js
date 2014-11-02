@@ -1,6 +1,4 @@
-
-    <script>
-       //var Datared = new Firebase('https://uwyfjh6p0t4.firebaseio-demo.com/');
+      //var Datared = new Firebase('https://uwyfjh6p0t4.firebaseio-demo.com/');
        var Datared = new Firebase('https://thistle-io.firebaseio.com/');
       $('#messageInput').keypress(function (e) {
         if (e.keyCode == 13) {
@@ -30,4 +28,3 @@
         $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
         $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
       };
-    </script>

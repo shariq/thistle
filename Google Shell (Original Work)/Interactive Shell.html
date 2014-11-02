@@ -7,6 +7,7 @@
     <script type="text/javascript" src="./Interactive Shell_files/shell.js"></script><style type="text/css"></style>
     <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script src='C:\Users\jtcadmin\Documents\GitHub\thistle\thistle\chat.js'></script>
     <style type="text/css">
       body {
         font-family: monospace;
@@ -75,16 +76,16 @@
   
     <body>
       <span id="toprow">
-      <textarea id="output" rows="22" readonly="readonly">Welcome to the simultaneous python Shell </textarea>
-      <textarea class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
-      <textarea class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
+      <textarea name="user_ouput" id="output" rows="22" readonly="readonly">Welcome to the simultaneous python Shell </textarea>
+      <textarea name="all_in_out" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
+      <textarea name="other_input" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
         </span>
         <form id="form" action="http://shell.appspot.com/shell.do" method="get">
           <script type="text/javascript">
             document.getElementById('statement').focus();
             </script>
           <span class=nobr>
-          <textarea class="prompt" id="caret" readonly="readonly" rows="4" onfocus="document.getElementById(statement).focus()">
+          <textarea name="caret" class="prompt" id="caret" readonly="readonly" rows="4" onfocus="document.getElementById(statement).focus()">
             &gt;&gt;&gt;</textarea>
           <textarea class="prompt" name="statement" id="statement" rows="4" onkeypress="return shell.onPromptKeyPress(event);"></textarea>
           </span>
