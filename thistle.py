@@ -127,7 +127,6 @@ def handleFirebaseEventHelper(message):
     # grab the input and run onStatement on it; possibly in a thread
 
 if __name__ == '__main__':
-    print sys.argv
     if len(sys.argv) < 3:
         print 'Incorrect usage.'
         print 'Example: python thistle.py thistle-io room_a540093'
