@@ -8,8 +8,10 @@ os.chdir('docker')
 print os.getcwd()
 print os.listdir(os.getcwd())
 
+# MUST RUN makedocker.sh BEFORE SERVER.PY
+# But after running once, it can be commented out
 #os.system('./resetdocker.sh')
-#os.system('./makedocker.sh')
+os.system('./makedocker.sh')
 
 activeRooms = set()
 
