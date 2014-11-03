@@ -1,2 +1,2 @@
 #!/bin/bash
-python thistle.py thistle-io $1
+python thistle.py prepel $1

@@ -3,8 +3,13 @@ import firebase
 from firebase import firebaseURL
 import traceback
 
-os.system('sudo ./docker/resetdocker.sh')
-os.system('sudo ./docker/makedocker.sh')
+os.chdir('docker')
+
+print os.getcwd()
+print os.listdir(os.getcwd())
+
+#os.system('./resetdocker.sh')
+#os.system('./makedocker.sh')
 
 activeRooms = set()
 
@@ -37,4 +42,4 @@ def firebaseMessageHandlerHelper(message):
         activeRooms.add(room)
         os.system('sudo docker run -d thistle '+room)
 
-firebase.subscriber(firebaseURL('thistle-io'), firebaseMessageHandler).start()
+firebase.subscriber('prepel', firebaseMessageHandler).start()
