@@ -52,12 +52,6 @@
         background-position: top
         background-repeat: no-repeat;
       }
-       #social2{
-        height: 30em;
-        width: 15em;
-        background-position: top
-        background-repeat: no-repeat;
-      }
       .processing {
         background-image: url("/static/spinner.gif");
       }
@@ -82,7 +76,7 @@
       <span id="toprow">
       <textarea name="user_ouput" id="output" rows="22" readonly="readonly">Welcome to the simultaneous python Shell </textarea>
       <textarea name="all_in_out" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
-      <textarea name="other_input" class="prompt" id="social2" rows="4" readonly="readonly";"></textarea>
+      <textarea name="other_input" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
         </span>
         <form id="messagesDiv">
           <span class=nobr>
@@ -91,13 +85,10 @@
           <textarea class="prompt" name="statement" id="messageInput" rows="4" placeholder='Message'></textarea>
           </span>
            </form>
-        <input type="hidden" name="session" value="agVzaGVsbHITCxIHU2Vzc2lvbhjT3_TenooGDA"></input>
         <input type="submit" style="display: none"></input>
     
     <script>
-    
     var roomURL = window.location.pathname.replace("/", "").replace(".", "");
-    var userName = prompt("Username: ");
     //var roomURL = 'ABCHUXU';
       if (roomURL == "") {
         var text = "";
@@ -106,22 +97,35 @@
           text += possible.charAt(Math.floor(Math.random() * possible.length));
         window.location = 'http://thistle.io/'+text;
       }
+    var userName = prompt("Username: ");
     $(document).ready( function() {
-      var roomFire = new Firebase('https://thistle-io.firebaseio.com/'+roomURL);
-      roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set("print 'welcome!'");
+      function displayInMessage(timeStampString, userName, text ) {
+	$('#output')[0].textContent += "\n" + userName + " $~ " + text;
+//        $('<div/>').text(text).prepend($('<em/>').text(timeStampString + ' : ' + userName+'> ')).appendTo($('#messagesDiv'));
+//        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
       
+      function displayOutMessage(timeStampString, userName, text ) {
+	$('#output')[0].textContent += "\n(" + userName + ") " + text;
+//	debugger;
+//        $('<div/>').text(text).prepend($('<em/>').text(timeStampString + ' : ' + userName+'> ')).appendTo($('#messagesDiv'));
+//        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+      var roomFire = new Firebase('https://prepel.firebaseio.com/'+roomURL);
+      roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set("print 'welcome!'");
       $('#messageInput').keypress(function (e) {
         if (e.keyCode == 13) {
-          $('#messageInput').val('');
           var text = $('#messageInput').val();
-          if (text == "") {
+          $('#messageInput').val('');
+          if (text == "" || text == "\n") {
             return;
           }
           roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set(text);
         }
       });
-      
+      roomFire.child(userName).onDisconnect().remove();
       roomFire.on('child_added', function(snapshot) {
+	console.log("A");
         var otherUsername = snapshot.name();
         snapshot.child('in').forEach(function(childSnapshot) {
           var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
@@ -135,15 +139,6 @@
         });
       });
 
-      function displayInMessage(timeStampString, userName, text ) {
-        $('<div/>').text(text).prepend($('<em/>').text(timeStampString + ' : ' + userName+'> ')).appendTo($('#messagesDiv'));
-        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
-      };
-      
-      function displayOutMessage(timeStampString, userName, text ) {
-        $('<div/>').text(text).prepend($('<em/>').text(timeStampString + ' : ' + userName+'> ')).appendTo($('#messagesDiv'));
-        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
-      };
     });
     </script>
   </body>
