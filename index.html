@@ -1,129 +1,145 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html>
-    
-<head>
-    <title>Thistle</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8";>
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
-    <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> </meta>
+    <title> Thistle </title>
     <style type="text/css"></style>
+    <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
     <style type="text/css">
-        body {
-         font-family: monospace;
-         font-size: 3pt;
-        }
+      body {
+        font-family: monospace;
+        font-size: 10pt;
+      }
+      p {
+        margin: 0.5em;
+      }
+      a img {
+        border: none;
+      }
+      .nobr{ white-space:nowrap; }
+      
+      .prompt, #output {
+        width: 45em;
+        height: 30em;
+        border: 1px solid silver;
+        background-color: #f5f5f5;
+        font-size: 10pt;
+        margin: 0.5em;
+        padding: 0.5em;
+        padding-right: 0em;
+      }
+      
+      #caret {
+        width: 2.5em;
+        height: 16em;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-right: 0px;
+      }
+      #messageInput {
+        width: 43em;
+        height: 16em;
+        margin-left: -1em;
+        padding-left: 0px;
+        border-left: 0px;
+        background-position: top right;
+        background-repeat: no-repeat;
+      }
+      #social{
+        height: 30em;
+        width: 15em;
+        background-position: top
+        background-repeat: no-repeat;
+      }
+      .processing {
+        background-image: url("/static/spinner.gif");
+      }
+      #ajax-status {
+        font-weight: bold;
+      }
+      .message {
+        color: #8AD;
+        font-weight: bold;
+        font-style: italic;
+      }
+      .error {
+        color: #F44;
+      }
+      .username {
+        font-weight: bold;
+    }
     </style>
+  </head>
+ <body>
+   
+      <span id="toprow">
+      <textarea name="user_ouput" id="output" rows="22" readonly="readonly">Welcome to the simultaneous python Shell </textarea>
+      <textarea name="all_in_out" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
+      <textarea name="other_input" class="prompt" id="social" rows="4" readonly="readonly";"></textarea>
+        </span>
+        <form id="messagesDiv">
+          <span class=nobr>
+          <textarea name="caret" class="prompt" id="caret" readonly="readonly" rows="4">
+            &gt;&gt;&gt;</textarea>
+          <textarea class="prompt" name="statement" id="messageInput" rows="4" placeholder='Message'></textarea>
+          </span>
+           </form>
+        <input type="submit" style="display: none"></input>
     
-</head>
-
-<body>
-    <h1>
-        Thistle
-    </h1>
-    
-    
-        <div class= "table">
-            <ul>
-                <li>
-                    
-                </li>
-            </ul>
-        </div>
-        <script>
-        
-    //Make jQueury debuggable or whatever
-    $( document ).ready(function() {
-        console.log( "ready!" );
-        
-        //I need redo the redirect so that the member the url
-        
-        function makeid() {
-            var text = "";
-            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            for( var i=0; i < 5; i++ )
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-            return text;
-        };
-        //Ensure that they navigate to the correct website I do actually have a function for this
-        if (window.location == "http://thistle.io")
-        {
-            console.log()
-            debugger;
-            console.log()
-            window.location = "http://thistle.io/"+makeid(); 
+    <script>
+    var roomURL = window.location.pathname.replace("/", "").replace(".", "");
+    //var roomURL = 'ABCHUXU';
+      if (roomURL == "") {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for( var i=0; i < 8; i++ )
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+        window.location = 'http://thistle.io/'+text;
+      }
+    var userName = prompt("Username: ");
+    $(document).ready( function() {
+      function displayInMessage(timeStampString, userName, text ) {
+	$('#output')[0].textContent += "\n" + userName + " $~ " + text;
+//        $('<div/>').text(text).prepend($('<em/>').text(timeStampString + ' : ' + userName+'> ')).appendTo($('#messagesDiv'));
+//        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+      
+      function displayOutMessage(timeStampString, userName, text ) {
+	$('#output')[0].textContent += "\n(" + userName + ") " + text;
+//	debugger;
+//        $('<div/>').text(text).prepend($('<em/>').text(timeStampString + ' : ' + userName+'> ')).appendTo($('#messagesDiv'));
+//        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+      var roomFire = new Firebase('https://prepel.firebaseio.com/'+roomURL);
+      roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set("print 'welcome!'");
+      $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+          var text = $('#messageInput').val();
+          $('#messageInput').val('');
+          if (text == "" || text == "\n") {
+            return;
+          }
+          roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set(text);
         }
-        //Ask for Username
-        var user=prompt("Enter your name");
-        /* this needs to be done in conjugction with
-         * adding a new user to the "room" */
-        
-        //consider using prepend.to//
-        var newuser = new Firebase('https://thistle-io.firebaseio.com/'); //(find a way to add the elemnt into the on('child_added') for whatever reason I am getting an error)
-        
-        newuser.on('child_added', function(snapshot){
-            debugger;
-            console.log('NEVER GOES IN HERE');
-            var snapshotvalue=snapshot.val();
-            $("<li class='slideshit'>"+a.shit+"</li>").prependTo("#");;
+      });
+      roomFire.child(userName).onDisconnect().remove();
+      roomFire.on('child_added', function(snapshot) {
+	console.log("A");
+        var otherUsername = snapshot.name();
+        snapshot.child('in').forEach(function(childSnapshot) {
+          var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
+          var messageStuff = childSnapshot.val();
+          displayInMessage(timeStampString, otherUsername, messageStuff);
         });
-        
-        </script>
-        
-        <div class="shitlist">
-                <ul id="table">
-                    <li class="" style="display: list-item;">the name of this site</li>
-                </ul>
-                    <script>myRootRef.endAt().limit(16).on('child_added', function(snapshot){
-                        debugger;
-                            var message = snapshot.name(), a = snapshot.val();
-                            $("<li class='slideshit'>"+a.shit+"</li>").prependTo("#table");
-                            $('.slideshit').hide();
-                            $('.slideshit').slideDown();
-                            $('.slideshit').removeClass('slideshit');
-                            });
-                    </script>
-        </div>
-        
-        
-        <script>
-        
-        
-        //If this person gave use some random  URL then we want to create a key value to store in the database
-        var roomID = document.URL.split("/")[length(document.URL.split("/"))];
-        var newentry = new Firebase('https://thistle-io.firebaseio.com/'+roomID) //Do I need to create a entry further in or just stop at thistle.io/?//
-        var defaultmessage = newentry.push()
-            defaultmessage.set({'username':user, '0':'Welcome to this unnecessary console'});
-        
-        
-        // add terminal console to the added li
-        
-        // Record the current time immediately, and queue an event to
-        // record the time at which the user disconnects.
-        
-        var sessionsRef = new Firebase('https://samplechat.firebaseio-demo.com/sessions/');
-        var mySessionRef = sessionsRef.push();
-        mySessionRef.onDisconnect().update({ endedAt: Firebase.ServerValue.TIMESTAMP });
-        mySessionRef.update({ startedAt: Firebase.ServerValue.TIMESTAMP });
-        
-        
-        //have a latest and a list of their previous commands, so when they add a new push
-        // this will probably need a for each statment
-       datasnapshot.forEach(function(childSnapshot){
-        debugger;
-            var people = childSnapshot.name();
-            var peopledata = childSnapshot.val();
-        })
-        var numUsers = peopledata.length
-        for(var x = 0; x < numUsers; x=! user){
-          peopledata = chidSnapshot.val();
-        }
-        //Try to get the values or children of snapshot at the roomID specified path level
-        //I don't want to push these values into the database, since they should alreay be there, I want to display
-        //them alongside the terminal that I created for the specifc user that came onto the site
-        //However I need to exclude members that are the same as the cureent user to keep track of their other statements
-        //Each of those  other statements needs to have its own list I shouldn't worry about the position of the list yet
+        snapshot.child('out').forEach(function(childSnapshot) {
+          var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
+          var messageStuff = childSnapshot.val();
+          displayOutMessage(timeStampString, otherUsername, messageStuff);
+        });
+      });
+
     });
-        </script>
-</body>
+    </script>
+  </body>
 </html>
