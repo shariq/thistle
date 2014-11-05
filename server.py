@@ -11,9 +11,9 @@ print os.listdir(os.getcwd())
 # MUST RUN makedocker.sh BEFORE SERVER.PY
 # But after running once, it can be commented out
 #os.system('./resetdocker.sh')
-os.system('./makedocker.sh')
+#os.system('./makedocker.sh')
 
-activeRooms = set()
+globals()['activeRooms'] = set()
 
 def firebaseMessageHandler(message):
     try:
@@ -33,15 +33,17 @@ def firebaseMessageHandlerHelper(message):
         if data is not None:
             for room in data.keys():
                 firebaseMessageHandler(('/'+room, data[room]))
+        else:
+            globals()['activeRooms'] = set()
         return
     room = path.split('/')[1]
     if path.count('/') == 1:
         if data is None:
-            if room in activeRooms:
-                activeRooms.remove(room)
+            if room in globals()['activeRooms']:
+                globals()['activeRooms'].remove(room)
                 return
-    if room not in activeRooms:
-        activeRooms.add(room)
+    if room not in globals()['activeRooms']:
+        globals()['activeRooms'].add(room)
         os.system('sudo docker run -d thistle '+room)
 
 firebase.subscriber('prepel', firebaseMessageHandler).start()

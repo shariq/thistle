@@ -124,8 +124,8 @@
         }
       });
       roomFire.child(userName).onDisconnect().remove();
-      roomFire.on('child_added', function(snapshot) {
-	console.log("A");
+      roomFire.on('child_changed', function(snapshot) {
+	debugger;
         var otherUsername = snapshot.name();
         snapshot.child('in').forEach(function(childSnapshot) {
           var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
