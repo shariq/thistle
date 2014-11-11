@@ -156,21 +156,19 @@ roomFire.on('child_added', function(snapshot) {
 // a new user joined room
 // add listeners to their in and out
 console.log('abc');
-debugger;
-snapshot.child('in').on('child_added', function(childSnap) {
+roomFire.child(snapshot.name()).child('in').on('child_added', function(childSnap) {
 console.log('qtpi');
-debugger;
 var timeStampStr = new Date(parseInt(childSnap.name())).toISOString();
 handleSomeSnapshot(snapshot.name(), childSnap.name(), snapshot.name() + ' (' + timeStampStr + ') : ' + $.strip(childSnap.val()), 'in');
 });
 
 console.log('mmm');
-snapshot.child('out').on('child_added', function(childSnap) {
-console.log('o0');
 debugger;
-var timeStampStr = new Date(parseInt(childSnap.name())).toISOString();
+roomFire.child(snapshot.name()).child('out').on('child_added', function(childSnax) {
+console.log('o0');
+var timeStampStr = new Date(parseInt(childSnax.name())).toISOString();
 console.log('fu');
-handleSomeSnapshot(snapshot.name(), childSnap.name(), ' (' + timeStampStr + ') : ' + $.strip(childSnap.val()), 'out');
+handleSomeSnapshot(snapshot.name(), childSnax.name(), ' (' + timeStampStr + ') : ' + $.strip(childSnax.val()), 'out');
 console.log('qq');
 // maybe this should display the username from which the output came? maybe not.
 });

@@ -46,4 +46,12 @@ def firebaseMessageHandlerHelper(message):
         globals()['activeRooms'].add(room)
         os.system('sudo docker run -d thistle '+room)
 
-firebase.subscriber('prepel', firebaseMessageHandler).start()
+while True:
+    try:
+        firSub = firebase.subscriber('prepel', firebaseMessageHandler)
+        firSub.start()
+        firSub.wait()
+    except:
+        pass
+    time.sleep(10)
+    print 'HAD TO RESTART SERVICE'
