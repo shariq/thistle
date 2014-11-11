@@ -168,6 +168,7 @@ roomFire.child(snapshot.name()).child('out').on('child_added', function(childSna
 console.log('o0');
 var timeStampStr = new Date(parseInt(childSnax.name())).toISOString();
 console.log('fu');
+debugger;
 handleSomeSnapshot(snapshot.name(), childSnax.name(), ' (' + timeStampStr + ') : ' + $.strip(childSnax.val()), 'out');
 console.log('qq');
 // maybe this should display the username from which the output came? maybe not.
@@ -182,7 +183,7 @@ console.log('qq');
           var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
           var messageStuff = childSnapshot.val();
           displayInMessage(timeStampString, otherUsername, messageStuff);
-        });          
+        });
         }
         snapshot.child('out').forEach(function(childSnapshot) {
           var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
