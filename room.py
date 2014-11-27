@@ -65,7 +65,8 @@ QueueManager.register('getInputQueue')
 QueueManager.register('getOutputQueue')
 
 if __name__ == '__main__':
-    remoteManager = QueueManager(address=('127.0.0.1', 5800), authkey = 'magic')
+    time.sleep(1)#???
+    remoteManager = QueueManager(address=('', 5800), authkey = 'magic')
     while True:
         try:
             # waits a long time for connection

@@ -21,6 +21,11 @@ from Queue import Queue
 import random
 import os
 
+# MIGHT NOT WANT TO DO THIS IN OTHER CASES!
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 class MessagePasser:
     def __init__(self, port, function_receive):
         self.i = inQueue = Queue()
@@ -59,8 +64,8 @@ def makeDocker(room_name, function_receive):
     port = port[0]
     ports_used.add(port)
     name_port_dictionary[room_name] = port
+    os.system('./container.sh '+str(port))
     name_passer_dictionary[room_name] = MessagePasser(port, function_receive)
-    os.system('container.sh '+str(port))
 
 def sendDocker(room_name, message):
     name_passer_dictionary[room_name].send(message)

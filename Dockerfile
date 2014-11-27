@@ -5,4 +5,6 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/ap
 RUN apt-get update | echo update
 RUN apt-get install -y python
 
-ENTRYPOINT ["/room.py"]
+ADD room.py /
+
+ENTRYPOINT ["python","/room.py"]
