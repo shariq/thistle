@@ -1,0 +1,72 @@
+There is a plan,
+the plan
+is like this:
+
+Docker instances run the Python shell
+getting messages from the Flask app
+over socketio
+and pushing messages to the Flask app
+over socketio
+
+A secret is generated which
+is
+shared
+between
+the Docker instances and
+the
+Flask app upon running the
+setup script.
+
+OK
+
+Now we have the users
+when they go to blank URL
+it just redirects
+them
+to a random URL
+thistle.io/??????
+
+This random URL represents
+a room
+the room, if new, fires up
+a Docker instance
+also, the user has join_room
+called
+within the
+Flask app
+
+OK
+
+Every time a user sends
+some
+message
+that gets passed to everyone
+else
+in the
+room.
+
+Also the Flask app
+passes
+that message
+over to the Docker
+instance.
+
+OK
+
+The Docker instances evaluates
+the
+message and
+sends
+the output:
+back
+to the room
+
+OK
+
+So now what's left
+
+Nothing?
+
+OK
+
+~
