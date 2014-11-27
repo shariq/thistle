@@ -23,7 +23,7 @@ def background_thread():
         count += 1
         socketio.emit('my response',
                       {'data': 'Server generated event', 'count': count},
-                      namespace='/test')
+                      namespace='/socket')
 
 
 @app.route('/')
@@ -35,14 +35,14 @@ def index():
     return render_template('index.html')
 
 
-@socketio.on('my event', namespace='/test')
+@socketio.on('my event', namespace='/socket')
 def test_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my response',
          {'data': message['data'], 'count': session['receive_count']})
 
 
-@socketio.on('my broadcast event', namespace='/test')
+@socketio.on('my broadcast event', namespace='/socket')
 def test_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my response',
@@ -50,7 +50,7 @@ def test_message(message):
          broadcast=True)
 
 
-@socketio.on('join', namespace='/test')
+@socketio.on('join', namespace='/socket')
 def join(message):
     join_room(message['room'])
     session['receive_count'] = session.get('receive_count', 0) + 1
@@ -59,7 +59,7 @@ def join(message):
           'count': session['receive_count']})
 
 
-@socketio.on('leave', namespace='/test')
+@socketio.on('leave', namespace='/socket')
 def leave(message):
     leave_room(message['room'])
     session['receive_count'] = session.get('receive_count', 0) + 1
@@ -68,7 +68,7 @@ def leave(message):
           'count': session['receive_count']})
 
 
-@socketio.on('my room event', namespace='/test')
+@socketio.on('my room event', namespace='/socket')
 def send_room_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my response',
@@ -76,12 +76,12 @@ def send_room_message(message):
          room=message['room'])
 
 
-@socketio.on('connect', namespace='/test')
+@socketio.on('connect', namespace='/socket')
 def test_connect():
     emit('my response', {'data': 'Connected', 'count': 0})
 
 
-@socketio.on('disconnect', namespace='/test')
+@socketio.on('disconnect', namespace='/socket')
 def test_disconnect():
     print('Client disconnected')
 
