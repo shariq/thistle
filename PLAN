@@ -4,18 +4,12 @@ is like this:
 
 Docker instances run the Python shell
 getting messages from the Flask app
-over socketio
+through multiprocessing.managers.BaseManager
 and pushing messages to the Flask app
-over socketio
-
-A secret is generated which
-is
-shared
-between
-the Docker instances and
-the
-Flask app upon running the
-setup script.
+through multiprocessing.managers.BaseManager
+on port 5000 on Docker instance and
+random
+port on Docker host
 
 OK
 
@@ -62,6 +56,17 @@ back
 to the room
 
 OK
+
+When there are no users
+left in the
+room
+then Docker host sends
+docker kill
+:(
+and also gets rid
+of
+manager
+:-(
 
 So now what's left
 

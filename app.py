@@ -1,3 +1,11 @@
+# This Python script will be in charge of delivering static content,
+# spinning up Docker instances, passing messages from clients to the
+# Docker instances, passing messages from the Docker instances to
+# clients, and spinning down Docker instances.
+
+# It uses Flask and gevent; but I'm not sure if this is meant to be
+# deployed. I'll be deploying it anyways.
+
 # started with https://github.com/miguelgrinberg/Flask-SocketIO/tree/master/example
 
 from gevent import monkey
