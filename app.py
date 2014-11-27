@@ -13,15 +13,16 @@ monkey.patch_all()
 
 import time
 from threading import Thread
-from flask import Flask, render_template, session, request
+from flask import Flask, session, request
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room
 
 app = Flask(__name__)
-app.debug = True
+app.debug = True # remove this in prod!
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 thread = None
 
+room_html = open('room.html').read()
 
 def background_thread():
     """Example of how to send server generated events to clients."""
@@ -33,14 +34,13 @@ def background_thread():
                       {'data': 'Server generated event', 'count': count},
                       namespace='/socket')
 
-
 @app.route('/')
 def index():
     global thread
     if thread is None:
         thread = Thread(target=background_thread)
         thread.start()
-    return render_template('index.html')
+    return room_html
 
 
 @socketio.on('my event', namespace='/socket')
