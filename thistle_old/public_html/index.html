@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> </meta>
+    <title> Thistle </title>
+    <style type="text/css"></style>
+    <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+        font-size: 10pt;
+      }
+      p {
+        margin: 0.5em;
+      }
+      a img {
+        border: none;
+      }
+      .nobr{ white-space:nowrap; }
+      
+      .console {
+        width: 43em;
+        height: 30em;
+        border: 1px solid silver;
+        background-color: #f5f5f5;
+        font-size: 10pt;
+        margin: 0.5em;
+        padding: 0.5em;
+        padding-right: 0em;
+      }
+      
+      #caret {
+        width: 2.5em;
+        height: 16em;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-right: 0px;
+      }
+      #messageInput {
+        width: 43em;
+        height: 16em;
+        margin-left: -0.5em;
+        padding-left: 0.5em;
+        border-left: 0px;
+        background-position: top right;
+        background-repeat: no-repeat;
+      }
+      #ajax-status {
+        font-weight: bold;
+      }
+      .message {
+        color: #8AD;
+        font-weight: bold;
+        font-style: italic;
+      }
+      .error {
+        color: #F44;
+      }
+      .username {
+        font-weight: bold;
+    }
+    </style>
+  </head>
+ <body>
+   
+      <textarea class="console" id="mine" rows="22" readonly="readonly"></textarea>
+      <textarea class="console" id="everyone" rows="4" readonly="readonly";"></textarea>
+      <textarea class="console" id="inputRecord" rows="4" readonly="readonly";"></textarea>
+        </span>
+        <form id="messagesDiv">
+          <span class=nobr>
+          <textarea name="caret" class="prompt" id="caret" readonly="readonly" rows="4">
+            &gt;&gt;&gt; </textarea>
+          <textarea class="prompt" name="statement" id="messageInput" rows="4"></textarea>
+          </span>
+           </form>
+        <input type="submit" style="display: none"></input>
+    
+    <script>
+    var roomURL = window.location.pathname.replace("/", "").replace(".", "");
+      if (roomURL == "") {
+        var text = "";
+        var possible = "abcdefghjkmnpqrstuvwxyz23456789";
+        for( var i=0; i < 5; i++ )
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+        window.location = 'http://thistle.io/'+text;
+      }
+    $(document).ready( function() {
+    if (window.location.pathname.replace('/','') == '')
+      return;
+    var userName = prompt("Username: ");
+//      function displayInMessage(timeStampString, userName, text ) {
+//	$('#output')[0].textContent += "\n" + userName + " $~ " + text;
+//      };
+      
+//      function displayOutMessage(timeStampString, userName, text ) {
+//	$('#output')[0].textContent += "\n(" + userName + ") " + text;
+//      };
+      var roomFire = new Firebase('https://prepel.firebaseio.com/'+roomURL);
+      roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set("print 'Welcome!'");
+      $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13 && !e.shiftKey) {
+          var text = $.trim($('#messageInput').val());
+          $('#messageInput').val('');
+          if (text == "") {
+            return;
+          }
+          roomFire.child(userName).child('in').child((new Date()).getTime().toString()).set(text);
+        }
+      });
+      roomFire.child(userName).onDisconnect().remove();
+      otherOutputMessages = {};
+      otherInputMessages = {};
+      myOutputMessages = {};
+      myInputMessages = {};
+
+function turnIntoText(assoc_array) {
+ debugger;
+ textOutput = '';
+ keys = [];
+ for (k in assoc_array) {
+  keys.push(k);
+ }
+ keys.sort();
+ for (i = 0; i < keys.length; i++) {
+  textOutput += assoc_array[keys[i]];
+ }
+ return textOutput;
+}
+
+function handleSomeSnapshot(user, ts, message, inout) {
+ debugger;
+ if (user == userName) {
+  if (inout == 'in') { 
+   myInputMessages[ts] = message;
+  } else {
+   myOutputMessages[ts] = message;
+  }
+ } else {
+  if (inout == 'in') {
+   otherInputMessages[ts] = message;
+  } else {
+   otherOutputMessages[ts] = message;
+  }
+ }
+ myShell = turnIntoText($.extend({}, myInputMessages, myOutputMessages));
+ allShell = turnIntoText($.extend({}, myInputMessages, myOutputMessages, otherInputMessages, otherOutputMessages));
+ inputShell = turnIntoText($.extend({}, myInputMessages, otherInputMessages));
+ $('#mine')[0].textContent = myShell;
+ $('#everyone')[0].textContent = allShell;
+ $('#inputRecord')[0].textContent = inputShell;
+}
+
+roomFire.on('child_added', function(snapshot) {
+// a new user joined room
+// add listeners to their in and out
+console.log('abc');
+roomFire.child(snapshot.name()).child('in').on('child_added', function(childSnap) {
+console.log('qtpi');
+var timeStampStr = new Date(parseInt(childSnap.name())).toISOString();
+handleSomeSnapshot(snapshot.name(), childSnap.name(), snapshot.name() + ' (' + timeStampStr + ') : ' + $.strip(childSnap.val()), 'in');
+});
+
+console.log('mmm');
+debugger;
+roomFire.child(snapshot.name()).child('out').on('child_added', function(childSnax) {
+console.log('o0');
+var timeStampStr = new Date(parseInt(childSnax.name())).toISOString();
+console.log('fu');
+debugger;
+handleSomeSnapshot(snapshot.name(), childSnax.name(), ' (' + timeStampStr + ') : ' + $.strip(childSnax.val()), 'out');
+console.log('qq');
+// maybe this should display the username from which the output came? maybe not.
+});
+});
+/*
+      roomFire.on('child_changed', function(snapshot) {
+	debugger;
+        var otherUsername = snapshot.name();
+        if (otherUsername == userName) {
+        snapshot.child('in').forEach(function(childSnapshot) {
+          var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
+          var messageStuff = childSnapshot.val();
+          displayInMessage(timeStampString, otherUsername, messageStuff);
+        });
+        }
+        snapshot.child('out').forEach(function(childSnapshot) {
+          var timeStampString = new Date(parseInt(childSnapshot.name())).toString();
+          var messageStuff = childSnapshot.val();
+          displayOutMessage(timeStampString, otherUsername, messageStuff);
+        });
+      });
+*/
+
+    });
+    </script>
+  </body>
+</html>
