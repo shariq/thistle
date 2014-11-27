@@ -1,5 +1,5 @@
 # This Python script is going to be run within each Docker
-# instance, where port 5800 has been bound to a port on
+# container, where port 5800 has been bound to a port on
 # the Docker host which is acting as an intermediate
 # message passer between clients' web browsers and the
 # Docker instances.
