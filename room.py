@@ -7,6 +7,7 @@
 # This script must evaluate all incoming messages, and
 # pass generated output back to the manager.
 
+import time
 import sys
 import traceback
 
@@ -29,19 +30,22 @@ class hostWriter:
         for s in l:
             self.write(s)
 
-def evalexecLoop(Q):
+# hope nobody touches the QUEUE_DONT_TOUCH...
+def evalexecLoop(QUEUE_DONT_TOUCH):
     while True:
         try:
-            statement = Q.get()
+            statement = QUEUE_DONT_TOUCH.get()
         except Exception, e:
-            # LOG THIS!
+            sys.__stdout__.write('HAD EXCEPTION GRABBING FROM Q IN EXECEVALLOOP!\n')
+            sys.__stdout__.write(str(traceback.format_exc()) + '\n')
             continue
         if statement is None:
             # this is important for app.py
             # sending None as input stops room.py
-            return 0
+            return
         try:
-            print eval(statement)
+            _ = eval(statement)
+            print _
         except SyntaxError:
             try:
                 exec(statement)
@@ -51,21 +55,29 @@ def evalexecLoop(Q):
         except:
             print 'Exception caught.'
             print traceback.format_exc().splitlines()[-1]
-        finally: # USER MIGHT TRY TO BREAK OUT OF LOOP <_>
-            # LOG THIS
-            evalexecLoop(Q)
+    # in case someone manages to break out of the infinite loop
+    evalexecLoop(QUEUE_DONT_TOUCH)
+
+class QueueManager(BaseManager):pass
+
+# make sure to register these methods in app.py as well!
+QueueManager.register('getInputQueue')
+QueueManager.register('getOutputQueue')
 
 if __name__ == '__main__':
-    remoteManager = BaseManager(address=('127.0.0.1', 5800))
+    remoteManager = QueueManager(address=('127.0.0.1', 5800), authkey = 'magic')
     while True:
         try:
+            # waits a long time for connection
             remoteManager.connect()
             break
         except:
-            # ADD LOGGING! THIS IS BAD!
+            print 'COULD NOT CONNECT TO REMOTE MANAGER'
+            print traceback.format_exc()
             time.sleep(5)
 
-    # make sure to register these methods in app.py!
+    print 'Successfully connected.'
+
     remoteInQueue = remoteManager.getInputQueue()
     remoteOutQueue = remoteManager.getOutputQueue()
 
