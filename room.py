@@ -21,7 +21,9 @@ class hostWriter:
         self.buffer = ''
         self.Q = Q
     def write(self, s):
-        sys.__stdout__.write(s)#nice for debugging
+        # for debugging
+        sys.__stdout__.write(s)
+
         for c in s:
             if c == '\n':
                 self.Q.put(self.buffer)
