@@ -7,4 +7,7 @@ RUN apt-get install -y python
 
 ADD room.py /
 
+EXPOSE 6200
+
 ENTRYPOINT ["python","/room.py"]
+#ENTRYPOINT ["bash"]

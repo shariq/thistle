@@ -16,6 +16,8 @@ from multiprocessing import Queue
 
 import threading
 
+import os
+
 class hostWriter:
     def __init__(self, Q):
         self.buffer = ''
@@ -23,7 +25,7 @@ class hostWriter:
     def write(self, s):
         # for debugging
         sys.__stdout__.write(s)
-
+        open('a','a').write(s)
         for c in s:
             if c == '\n':
                 self.Q.put(self.buffer)
@@ -72,13 +74,13 @@ if __name__ == '__main__':
     QueueManager.register('getInputQueue', callable=lambda:inputQueue)
     QueueManager.register('getOutputQueue', callable=lambda:outputQueue)
 
-    remoteManager = QueueManager(address=('localhost', 5800), authkey = 'magic')
+    remoteManager = QueueManager(address=('0.0.0.0', 6200), authkey = 'magic')
     remoteManager.start()
 
     class LocalManager(BaseManager):pass
     LocalManager.register('getInputQueue')
     LocalManager.register('getOutputQueue')
-    lm = LocalManager(address=('localhost', 5800), authkey = 'magic')
+    lm = LocalManager(address=('localhost', 6200), authkey = 'magic')
     lm.connect()
     sys.stdout = hostWriter(lm.getOutputQueue())
     evalexecThread = threading.Thread(target = evalexecLoop, args = (lm.getInputQueue(), ))

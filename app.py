@@ -34,18 +34,11 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 class MessagePasser:
-    def __init__(self, port, function_receive):
+    def __init__(self, port, function_receive=printf, ip_address='127.0.0.1'):
         class QueueManager(BaseManager):pass
         QueueManager.register('getInputQueue')
         QueueManager.register('getOutputQueue')
-        #ip_address = os.popen("docker inspect --format '{{ .NetworkSettings.IPAddress }}' "+str(port)).read()
-        #while not ip_address:
-        #    ip_address = os.popen("docker inspect --format '{{ .NetworkSettings.IPAddress }}' "+str(port)).read()
-        #    time.sleep(0.5)
-        #    print 'COULD NOT FIND DOCKER CONTAINER '+str(port)
-        # self.qm = QueueManager(address=(ip_address,5800), authkey='magic')
-        # messing around with port; normally would be localhost:port but there's a problem with that
-        self.qm = QueueManager(address=('127.0.0.1',port), authkey='magic')
+        self.qm = QueueManager(address=(ip_address,port), authkey='magic')
         while True:
             try: # waits a long time for connection
                 self.qm.connect()
@@ -72,13 +65,12 @@ class MessagePasser:
         self.i.put(None)
         self.o.put(None)
         self.receiver.join()
-#        self.qm.shutdown()
 
 ports_used = set()
 name_port_dictionary = {}
 name_passer_dictionary = {}
 
-def makeDocker(room_name, function_receive):
+def makeDocker(room_name, function_receive = printf):
     port = [random.randint(40000,50000)]
     while port[0] in ports_used:
         port[0] = random.randint(40000,50000)
@@ -94,7 +86,7 @@ def sendDocker(room_name, message):
 def breakDocker(room_name):
     name_passer_dictionary[room_name].stop()
     port = name_port_dictionary[room_name]
-    os.system('docker stop '+str(port))#or docker kill :p
+    os.system('docker kill '+str(port))#or docker stop :p
     ports_used.remove(port)
     del name_passer_dictionary[room_name]
     del name_port_dictionary[room_name]
@@ -107,9 +99,6 @@ socketio = SocketIO(app)
 thread = None
 
 room_html = open('room.html').read()
-
-
-
 
 def background_thread():
     """Example of how to send server generated events to clients."""
