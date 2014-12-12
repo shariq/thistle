@@ -11,9 +11,8 @@ import time
 import sys
 import traceback
 
-import Queue
-
 from multiprocessing.managers import BaseManager
+from multiprocessing import Queue
 
 import threading
 
@@ -62,8 +61,8 @@ def evalexecLoop(QUEUE_DONT_TOUCH):
     evalexecLoop(QUEUE_DONT_TOUCH)
 
 if __name__ == '__main__':
-    inputQueue = Queue.Queue()
-    outputQueue = Queue.Queue()
+    inputQueue = Queue()
+    outputQueue = Queue()
 
     class QueueManager(BaseManager):pass
 
@@ -83,6 +82,5 @@ if __name__ == '__main__':
     evalexecThread = threading.Thread(target = evalexecLoop, args = (lm.getInputQueue(), ))
     evalexecThread.start()
     evalexecThread.join()
-
-    remoteManager.shutdown()
+    sys.exit(0)
 

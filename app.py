@@ -10,7 +10,9 @@
 
 from gevent import monkey
 
-#monkey.patch_all()
+monkey.patch_all(socket = False, thread = False)
+# can't find better way to fix issues with gevent...
+# I imagine this will significantly slow down server in prod
 
 import time
 import traceback
@@ -19,7 +21,7 @@ from flask import Flask, session, request
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room
 
 from multiprocessing.managers import BaseManager
-from Queue import Queue
+from multiprocessing import Queue
 import random
 import os
 
