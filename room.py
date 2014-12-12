@@ -11,6 +11,8 @@ import time
 import sys
 import traceback
 
+import Queue
+
 from multiprocessing.managers import BaseManager
 
 import threading
@@ -20,6 +22,7 @@ class hostWriter:
         self.buffer = ''
         self.Q = Q
     def write(self, s):
+        sys.__stdout__.write(s)#nice for debugging
         for c in s:
             if c == '\n':
                 self.Q.put(self.buffer)
@@ -58,33 +61,28 @@ def evalexecLoop(QUEUE_DONT_TOUCH):
     # in case someone manages to break out of the infinite loop
     evalexecLoop(QUEUE_DONT_TOUCH)
 
-class QueueManager(BaseManager):pass
-
-# make sure to register these methods in app.py as well!
-QueueManager.register('getInputQueue')
-QueueManager.register('getOutputQueue')
-
 if __name__ == '__main__':
-    time.sleep(1)#???
-    remoteManager = QueueManager(address=('', 5800), authkey = 'magic')
-    while True:
-        try:
-            # waits a long time for connection
-            remoteManager.connect()
-            break
-        except:
-            print 'COULD NOT CONNECT TO REMOTE MANAGER'
-            print traceback.format_exc()
-            time.sleep(5)
+    inputQueue = Queue.Queue()
+    outputQueue = Queue.Queue()
 
-    print 'Successfully connected.'
+    class QueueManager(BaseManager):pass
 
-    remoteInQueue = remoteManager.getInputQueue()
-    remoteOutQueue = remoteManager.getOutputQueue()
+    # make sure to register these methods in app.py as well!
+    QueueManager.register('getInputQueue', callable=lambda:inputQueue)
+    QueueManager.register('getOutputQueue', callable=lambda:outputQueue)
 
-    sys.stdout = hostWriter(remoteOutQueue)
+    remoteManager = QueueManager(address=('localhost', 5800), authkey = 'magic')
+    remoteManager.start()
 
-    evalexecThread = threading.Thread(target = evalexecLoop, args = (remoteInQueue, ))
+    class LocalManager(BaseManager):pass
+    LocalManager.register('getInputQueue')
+    LocalManager.register('getOutputQueue')
+    lm = LocalManager(address=('localhost', 5800), authkey = 'magic')
+    lm.connect()
+    sys.stdout = hostWriter(lm.getOutputQueue())
+    evalexecThread = threading.Thread(target = evalexecLoop, args = (lm.getInputQueue(), ))
     evalexecThread.start()
     evalexecThread.join()
+
+    remoteManager.shutdown()
 

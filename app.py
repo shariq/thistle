@@ -9,9 +9,11 @@
 # started with https://github.com/miguelgrinberg/Flask-SocketIO/tree/master/example
 
 from gevent import monkey
-monkey.patch_all()
+
+#monkey.patch_all()
 
 import time
+import traceback
 from threading import Thread
 from flask import Flask, session, request
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room
@@ -21,6 +23,9 @@ from Queue import Queue
 import random
 import os
 
+def printf(s):
+    print s
+
 # MIGHT NOT WANT TO DO THIS IN OTHER CASES!
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
@@ -28,12 +33,27 @@ os.chdir(dname)
 
 class MessagePasser:
     def __init__(self, port, function_receive):
-        self.i = inQueue = Queue()
-        self.o = outQueue = Queue()
         class QueueManager(BaseManager):pass
-        QueueManager.register('getInputQueue', callable=lambda:inQueue)
-        QueueManager.register('getOutputQueue', callable=lambda:outQueue)
-        self.qm = QueueManager(address=('127.0.0.1', port), authkey='magic')
+        QueueManager.register('getInputQueue')
+        QueueManager.register('getOutputQueue')
+        #ip_address = os.popen("docker inspect --format '{{ .NetworkSettings.IPAddress }}' "+str(port)).read()
+        #while not ip_address:
+        #    ip_address = os.popen("docker inspect --format '{{ .NetworkSettings.IPAddress }}' "+str(port)).read()
+        #    time.sleep(0.5)
+        #    print 'COULD NOT FIND DOCKER CONTAINER '+str(port)
+        # self.qm = QueueManager(address=(ip_address,5800), authkey='magic')
+        # messing around with port; normally would be localhost:port but there's a problem with that
+        self.qm = QueueManager(address=('127.0.0.1',port), authkey='magic')
+        while True:
+            try: # waits a long time for connection
+                self.qm.connect()
+                break
+            except:
+                print 'COULD NOT CONNECT TO REMOTE MANAGER'
+                print traceback.format_exc()
+                time.sleep(5)
+        self.i = self.qm.getInputQueue()
+        self.o = self.qm.getOutputQueue()
         def infiniteReceive(Q, f):
             while True:
                 try:
@@ -42,16 +62,15 @@ class MessagePasser:
                     f(e)
                 except:
                     pass
-        self.receiver = Thread(target = infiniteReceive, args = (outQueue, function_receive))
+        self.receiver = Thread(target = infiniteReceive, args = (self.o, function_receive))
         self.receiver.start()
-        self.qm.start()
     def send(self, m):
         self.i.put(m)
     def stop(self):
         self.i.put(None)
         self.o.put(None)
         self.receiver.join()
-        self.qm.shutdown()
+#        self.qm.shutdown()
 
 ports_used = set()
 name_port_dictionary = {}
@@ -73,7 +92,7 @@ def sendDocker(room_name, message):
 def breakDocker(room_name):
     name_passer_dictionary[room_name].stop()
     port = name_port_dictionary[room_name]
-    os.system('docker stop '+str(port))
+    os.system('docker stop '+str(port))#or docker kill :p
     ports_used.remove(port)
     del name_passer_dictionary[room_name]
     del name_port_dictionary[room_name]
