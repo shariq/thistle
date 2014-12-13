@@ -1,9 +1,12 @@
 ONLY THREE FILES LEFT!
 
+acorn.py:
+module which takes care of message passing and spinning up docker instances.
+can be imported; accessible methods are makeDocker, sendDocker, breakDocker.
+
 app.py:
-is run once. serves room.html. passes messages between room.py and users.
-spins up and down Docker instances. manages rooms. redirects users to
-random URL if they visit "/".
+is run once. serves room.html. uses acorn.py to manage docker instances.
+manages rooms. redirects users to random URL if they visit "/".
 
 room.html:
 is delivered statically to users. beautifully displays other users' inputs
