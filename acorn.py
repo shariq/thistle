@@ -2,6 +2,9 @@
 # containers, pass messages to them, and pass messages received from
 # them to a handler function.
 
+MEMORY_LIMIT = '128m'
+CONTAINER_NAME = 'thistle'
+
 import time
 import traceback
 from threading import Thread
@@ -69,7 +72,7 @@ def makeDocker(room_name, function_receive = printf):
         port = random.randint(40000,50000)
         if port in ports_used:
             continue
-        error = os.system('docker run -d --name $1 -p 127.0.0.1:$1:6200 thistle $1'.replace('$1',str(port)))
+        error = os.system(('docker run -d -m '+MEMORY_LIMIT+' --name $1 -p 127.0.0.1:$1:6200 '+CONTAINER_NAME+' $1').replace('$1',str(port)))
         if error:
             continue
         ports_used.add(port)
