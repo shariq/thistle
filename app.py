@@ -12,7 +12,10 @@ import os
 from flask import Flask, session, request
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room
 
-from acorn import makeDocker, sendDocker, breakDocker
+import acorn
+makeDocker = acorn.makeDocker
+sendDocker = acorn.sendDocker
+breakDocker = acorn.breakDocker
 # makeDocker(room_name, on_receive_handler) : if room_name already exists, returns without error
 # sendDocker(room_name, message) : message is input for the Docker container
 # breakDocker(room_name) : prints weird stuff if room_name does not exist; runs docker kill
@@ -40,7 +43,7 @@ def join(message):
     roomName = message['room']
     join_room(roomName)
     # Does not makeDocker if it already exists
-    makeDocker(roomName, eval('lambda x:socketio.emit("my response", {"data":x},room='+roomName+')'))
+    makeDocker(roomName, eval('lambda x:socketio.emit("my response", {"data":x,count:-1},room="'+roomName+'")'))
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my response',
          {'data': 'In rooms: ' + ', '.join(request.namespace.rooms),
@@ -63,7 +66,6 @@ def send_room_message(message):
     sendDocker(message['room'], message['data']);
 
 
-'''
 # no need to worry about connect and disconnect if they're equivalent to joining and leaving rooms
 @socketio.on('connect', namespace='/socket')
 def test_connect():
@@ -73,7 +75,6 @@ def test_connect():
 @socketio.on('disconnect', namespace='/socket')
 def test_disconnect():
     print('Client disconnected')
-'''
 
 
 if __name__ == '__main__':
