@@ -7,6 +7,7 @@
 
 # started with https://github.com/miguelgrinberg/Flask-SocketIO/tree/master/example
 
+import os
 
 from flask import Flask, session, request
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room

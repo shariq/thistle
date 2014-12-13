@@ -101,17 +101,16 @@ def makeDocker(room_name, function_receive=printf):
         port = random.randint(40000, 50000)
         if port not in ports_used:
             docker_command = 'docker run -d -m '
-            docker_command += MEMORY_LIMIT
-            docker_command += ' --name $1 -p 127.0.0.1:$1:6200 '
-            docker_command += CONTAINER_NAME + ' $1'
+            docker_command +=  MEMORY_LIMIT
+            docker_command +=  ' --name $1 -p 127.0.0.1:$1:6200 '
+            docker_command +=  CONTAINER_NAME + ' $1'
             error = os.system(docker_command.replace('$1', str(port)))
             if not error:
                 ports_used.add(port)
                 name_port_dictionary[room_name] = port
-                name_passer_dictionary[room_name] = MessagePasser(
-                    port,
-                    function_receive)
-                return
+                name_passer_dictionary[room_name] = MessagePasser(port,
+                                                                  function_receive)
+        return
     print 'YIKES! TRIED TO MAKEDOCKER 15 TIMES. STOPPED RETRYING.'
 
 
@@ -138,7 +137,7 @@ def breakDocker(room_name):
         os.system('docker kill ' + str(port))
         # ain't nobody got time for docker stop
         # unless we can do it nonblocking
-        ports_used.remove(port)
+        ports_used.remove(port) 
         del name_passer_dictionary[room_name]
         del name_port_dictionary[room_name]
         # clean up state variables

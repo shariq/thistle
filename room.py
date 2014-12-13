@@ -7,7 +7,6 @@
 # This script must evaluate all incoming messages, and
 # pass generated output back to the manager.
 
-import time
 import sys
 import traceback
 
@@ -16,16 +15,14 @@ from multiprocessing import Queue
 
 import threading
 
-import os
-
 class hostWriter:
     def __init__(self, Q):
         self.buffer = ''
         self.Q = Q
     def write(self, s):
         # for debugging
-        sys.__stdout__.write(s)
-        open('a','a').write(s)
+        #sys.__stdout__.write(s)
+        #open('a','a').write(s)
         for c in s:
             if c == '\n':
                 self.Q.put(self.buffer)
@@ -41,9 +38,9 @@ def evalexecLoop(QUEUE_DONT_TOUCH):
     while True:
         try:
             statement = QUEUE_DONT_TOUCH.get()
-        except Exception, e:
-            sys.__stdout__.write('HAD EXCEPTION GRABBING FROM Q IN EXECEVALLOOP!\n')
-            sys.__stdout__.write(str(traceback.format_exc()) + '\n')
+        except:
+            print 'HAD EXCEPTION GRABBING FROM Q IN EXECEVALLOOP!'
+            print traceback.format_exc()
             continue
         if statement is None:
             # this is important for app.py
@@ -78,10 +75,13 @@ if __name__ == '__main__':
     remoteManager.start()
 
     class LocalManager(BaseManager):pass
+
     LocalManager.register('getInputQueue')
     LocalManager.register('getOutputQueue')
+
     lm = LocalManager(address=('localhost', 6200), authkey = 'magic')
     lm.connect()
+
     sys.stdout = hostWriter(lm.getOutputQueue())
     evalexecThread = threading.Thread(target = evalexecLoop, args = (lm.getInputQueue(), ))
     evalexecThread.start()
