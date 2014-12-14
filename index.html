@@ -20,12 +20,13 @@
             return $(this).attr('id');
         }).get();
 
-        conn = new SockJS('http://' + window.location.host + '/chat', transports);
+        conn = new SockJS('http://' + window.location.host + '/socket/connection', transports);
 
         log('Connecting...');
 
         conn.onopen = function() {
           log('Connected.');
+          conn.send('!@!#~@~ROOM IS:' + window.location.pathname.split('/')[1])
           update_ui();
         };
 
