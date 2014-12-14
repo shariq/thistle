@@ -30,7 +30,8 @@ docker_status = {}
 docker_queues = {}
 
 def makeDocker(room, callback):
-    if room not in docker_status:
+    print 'makedocker'
+    if room not in docker_status or docker_status[room] == 'break':
         docker_queues[room] = Queue.Queue()
         docker_status[room] = 'making'
         def makeHelper():  # woo, closures!
@@ -50,12 +51,14 @@ def makeDocker(room, callback):
                     except Queue.Empty:
                         break
                     except:
+                        docker_status[room] = 'made'
                         return  # later we should stop this from happening :3
             docker_status[room] = 'made'
             del docker_queues[room]
         threading.Thread(target = makeHelper).start()
 
 def sendDocker(room, message):
+    print 'senddocker'
     if room in docker_status:
         if docker_status[room] == 'making':
             if room in docker_queues:
@@ -66,6 +69,7 @@ def sendDocker(room, message):
             threading.Thread(target = acorn.sendDocker, args = (room, message)).start()
 
 def breakDocker(room):
+    print 'breakdocker'
     if room in docker_status:
         if docker_status[room] == 'making':
             docker_status[room] = 'break'
@@ -73,7 +77,7 @@ def breakDocker(room):
             del docker_status[room]
     if room in docker_queues:
         del docker_queues[room]
-    threading.Thread(target = acorn.breakDocker, args = (room, )).start()
+    acorn.breakDocker(room)
 
 
 
@@ -104,6 +108,7 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
         self.username = randomUsername()
 
     def on_message(self, message):
+        print message
         # Check if they're joining a room
         if '!@!#~@~USER IS:' in message:
             self.username = message.replace('!@!#~@~USER IS:', '')
@@ -112,7 +117,7 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
         elif self.room is None or self.room not in self.rooms:
             if '!@!#~@~ROOM IS:' in message:  # self.room is None
                 self.room = message.replace('!@!#~@~ROOM IS:', '')
-            if self.room not in self.rooms:
+            if self.room not in self.rooms or not self.rooms[self.room]:
                 participants = set()
                 makeDocker(self.room, callback(participants, self.broadcast))
                 self.rooms[self.room] = participants
