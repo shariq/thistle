@@ -9,7 +9,13 @@ import tornado.web
 import sockjs.tornado
 
 
+import random
+import urllib2
 
+def randomUsername():
+    name = urllib2.urlopen('http://burgundy.io:8080/').read()
+    title = random.choice(['The ', 'A ', 'Le ', 'Random ', 'Some '])
+    return title + name[0].upper() + name[1:].lower()
 
 
 import acorn
@@ -24,8 +30,7 @@ docker_status = {}
 docker_queues = {}
 
 def makeDocker(room, callback):
-    print 'makedocker'
-    if room not in docker_status or docker_status[room] == 'break':
+    if room not in docker_status:
         docker_queues[room] = Queue.Queue()
         docker_status[room] = 'making'
         def makeHelper():  # woo, closures!
@@ -45,14 +50,12 @@ def makeDocker(room, callback):
                     except Queue.Empty:
                         break
                     except:
-                        docker_status[room] = 'made'
                         return  # later we should stop this from happening :3
             docker_status[room] = 'made'
             del docker_queues[room]
         threading.Thread(target = makeHelper).start()
 
 def sendDocker(room, message):
-    print 'senddocker'
     if room in docker_status:
         if docker_status[room] == 'making':
             if room in docker_queues:
@@ -63,7 +66,6 @@ def sendDocker(room, message):
             threading.Thread(target = acorn.sendDocker, args = (room, message)).start()
 
 def breakDocker(room):
-    print 'breakdocker'
     if room in docker_status:
         if docker_status[room] == 'making':
             docker_status[room] = 'break'
@@ -71,7 +73,7 @@ def breakDocker(room):
             del docker_status[room]
     if room in docker_queues:
         del docker_queues[room]
-    acorn.breakDocker(room)
+    threading.Thread(target = acorn.breakDocker, args = (room, )).start()
 
 
 
@@ -99,16 +101,18 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
         # Send that someone joined
         self.room = None
         self.command_queue = []  # later: make this an actual queue
+        self.username = randomUsername()
 
     def on_message(self, message):
-        print message
         # Check if they're joining a room
-        if self.room is None and '!@!#~@~ROOM IS:' not in message:
+        if '!@!#~@~USER IS:' in message:
+            self.username = message.replace('!@!#~@~USER IS:', '')
+        elif self.room is None and '!@!#~@~ROOM IS:' not in message:
             self.command_queue.append(message)
         elif self.room is None or self.room not in self.rooms:
             if '!@!#~@~ROOM IS:' in message:  # self.room is None
                 self.room = message.replace('!@!#~@~ROOM IS:', '')
-            if self.room not in self.rooms or not self.rooms[self.room]:
+            if self.room not in self.rooms:
                 participants = set()
                 makeDocker(self.room, callback(participants, self.broadcast))
                 self.rooms[self.room] = participants
@@ -118,7 +122,7 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
                 #self.send(command) # not sure if this works; will test later
         # Broadcast message
         else:
-            self.broadcast(self.rooms[self.room], message)
+            self.broadcast(self.rooms[self.room], self.username + ': ' + message)
             sendDocker(self.room, message)
 
     def on_close(self):
