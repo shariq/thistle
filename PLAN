@@ -1,0 +1,89 @@
+ONLY TWO FILES LEFT!
+
+app.py:
+is run once. serves index.html. uses acorn.py to manage docker instances.
+manages rooms. redirects users to random URL if they visit "/".
+
+index.html:
+is delivered statically to users. beautifully displays other users' inputs
+and outputs. contains JS which handles socketio. perhaps later some parts
+broken off into room.js and room.css.
+
+
+There is a plan,
+the plan
+is like this:
+
+Docker instances run the Python shell
+getting messages from the Flask app
+through multiprocessing.managers.BaseManager
+and pushing messages to the Flask app
+through multiprocessing.managers.BaseManager
+on port 5000 on Docker instance and
+random
+port on Docker host
+
+OK
+
+Now we have the users
+when they go to blank URL
+it just redirects
+them
+to a random URL
+thistle.io/??????
+
+This random URL represents
+a room
+the room, if new, fires up
+a Docker instance
+also, the user has join_room
+called
+within the
+Tornado app
+
+OK
+
+Every time a user sends
+some
+message
+that gets passed to everyone
+else
+in the
+room.
+
+Also the Tornado app
+passes
+that message
+over to the Docker
+instance.
+
+OK
+
+The Docker instances evaluates
+the
+message and
+sends
+the output:
+back
+to the room
+
+OK
+
+When there are no users
+left in the
+room
+then Docker host sends
+docker kill
+:(
+and also gets rid
+of
+manager
+:-(
+
+So now what's left
+
+Nothing?
+
+OK
+
+~

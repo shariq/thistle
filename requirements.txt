@@ -1,2 +1,1 @@
-sseclient
-requests
+sockjs-tornado
