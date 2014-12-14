@@ -54,6 +54,7 @@ class MessagePasser:
                 break
             except:
                 # debugging messages
+                time.sleep(1)
                 print 'COULD NOT CONNECT TO REMOTE MANAGER'
                 print traceback.format_exc()
         self.i = self.qm.getInputQueue()
