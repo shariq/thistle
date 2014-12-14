@@ -27,6 +27,8 @@ class hostWriter:
     def write(self, s):
         # for debugging:
         # sys.__stdout__.write(s)
+        with open('logz.log','a') as F:
+            F.write(s)
         # open('a','a').write(s)
         for c in s:
             if c == '\n':
@@ -56,9 +58,12 @@ def evalexecLoop(QUEUE_DONT_TOUCH):
             # this is important for acorn.py
             # sending None as input stops room.py
             return
+        with open('logz.log','a') as F:
+            F.write(statement + '\n')
         try:
             _ = eval(statement)
-            print _
+            if _ is not None:
+                print _
         except SyntaxError:
             # Maybe it's not an expression, it's a statement?
             try:
