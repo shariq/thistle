@@ -14,7 +14,7 @@ import sockjs.tornado
 
 import acorn
 import threading
-from Queue import Queue
+import Queue
 
 # let's wrap makeDocker, sendDocker, and breakDocker
 # to catch exceptions and make them non-blocking and
@@ -25,7 +25,7 @@ docker_queues = {}
 
 def makeDocker(room, callback):
     if room not in docker_status:
-        docker_queues[room] = Queue()
+        docker_queues[room] = Queue.Queue()
         docker_status[room] = 'making'
         def makeHelper():  # woo, closures!
             try:
@@ -94,7 +94,7 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
     def on_open(self, info):
         # Send that someone joined
         self.room = None
-        self.command_queue = []
+        self.command_queue = []  # later: make this an actual queue
 
     def on_message(self, message):
         # Check if they're joining a room

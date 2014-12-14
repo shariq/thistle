@@ -50,6 +50,8 @@ class MessagePasser:
                 # waits a long time for connection
                 # fails while Docker instance is still booting up
                 break
+            except KeyboardInterrupt:
+                break
             except:
                 # debugging messages
                 print 'COULD NOT CONNECT TO REMOTE MANAGER'
@@ -66,6 +68,8 @@ class MessagePasser:
                     if item is None:
                         return
                     function_receive(item)
+                except KeyboardInterrupt:
+                    return
                 except:
                     print traceback.format_exc()
         self.receiver = Thread(target=infiniteReceive,
