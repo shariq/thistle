@@ -67,10 +67,7 @@ def sendDocker(room, message):
 
 def breakDocker(room):
     if room in docker_status:
-        if docker_status[room] == 'making':
-            docker_status[room] = 'break'
-        else:
-            del docker_status[room]
+        del docker_status[room]
     if room in docker_queues:
         del docker_queues[room]
     threading.Thread(target = acorn.breakDocker, args = (room, )).start()
@@ -131,8 +128,8 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
                 if self in self.rooms[self.room]:
                     self.rooms[self.room].remove(self)
                 if not self.rooms[self.room]:  # all participants left
-                    breakDocker(self.room)
                     del self.rooms[self.room]
+                    breakDocker(self.room)
             else:
                 breakDocker(self.room)
 

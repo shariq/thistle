@@ -2,7 +2,7 @@
 <html>
 <head>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-  <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs.min.js"></script>
   <script>
     $(function() {
       var conn = null;
@@ -96,7 +96,6 @@
         if (e.which == 13 && !e.altKey && !e.shiftKey) {
           $('#chatform').submit();
         }
-        return false;
       });
 
       
@@ -144,13 +143,13 @@
 <div id="log" style="width: 60em; height: 20em; overflow:auto; border: 1px solid black">
 </div>
 <form id="chatform">
-  <textarea id="text" />
+  <textarea id="text" style="width: 80em, height:3 em; overflow:auto">
   </textarea>
   <input type="submit" />
 </form>
 <form id="userform">
   <input id="user" type="text" />
-  <input type="submit" />
+  <input type="submit">Change username</input>
 </form>
 </body>
 </html>
