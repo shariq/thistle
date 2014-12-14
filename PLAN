@@ -1,21 +1,13 @@
-ONLY THREE FILES LEFT!
-
-acorn.py:
-module which takes care of message passing and spinning up docker instances.
-can be imported; accessible methods are makeDocker, sendDocker, breakDocker.
+ONLY TWO FILES LEFT!
 
 app.py:
-is run once. serves room.html. uses acorn.py to manage docker instances.
+is run once. serves index.html. uses acorn.py to manage docker instances.
 manages rooms. redirects users to random URL if they visit "/".
 
-room.html:
+index.html:
 is delivered statically to users. beautifully displays other users' inputs
 and outputs. contains JS which handles socketio. perhaps later some parts
 broken off into room.js and room.css.
-
-room.py:
-is run within Docker instances. evalexecs messages and passes back output
-to app.py through managers.
 
 
 There is a plan,
@@ -47,7 +39,7 @@ a Docker instance
 also, the user has join_room
 called
 within the
-Flask app
+Tornado app
 
 OK
 
@@ -59,7 +51,7 @@ else
 in the
 room.
 
-Also the Flask app
+Also the Tornado app
 passes
 that message
 over to the Docker
