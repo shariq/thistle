@@ -9,13 +9,7 @@ import tornado.web
 import sockjs.tornado
 
 
-import random
-import urllib2
 
-def randomUsername():
-    name = urllib2.urlopen('http://burgundy.io:8080/').read()
-    title = random.choice(['The ', 'A ', 'Le ', 'Random ', 'Some '])
-    return title + name[0].upper() + name[1:].lower()
 
 
 import acorn
@@ -105,14 +99,11 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
         # Send that someone joined
         self.room = None
         self.command_queue = []  # later: make this an actual queue
-        self.username = randomUsername()
 
     def on_message(self, message):
         print message
         # Check if they're joining a room
-        if '!@!#~@~USER IS:' in message:
-            self.username = message.replace('!@!#~@~USER IS:', '')
-        elif self.room is None and '!@!#~@~ROOM IS:' not in message:
+        if self.room is None and '!@!#~@~ROOM IS:' not in message:
             self.command_queue.append(message)
         elif self.room is None or self.room not in self.rooms:
             if '!@!#~@~ROOM IS:' in message:  # self.room is None
@@ -127,7 +118,7 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
                 #self.send(command) # not sure if this works; will test later
         # Broadcast message
         else:
-            self.broadcast(self.rooms[self.room], self.username + ': ' + message)
+            self.broadcast(self.rooms[self.room], message)
             sendDocker(self.room, message)
 
     def on_close(self):
