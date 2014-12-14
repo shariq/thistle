@@ -3,7 +3,8 @@
 # This shell script is intended to be run once
 # to set up the environment on which to deploy
 # Thistle. Written for Debian based systems.
-# Tested only on Ubuntu 14.04.
+# Tested only in default Ubuntu 14.04 image on
+# DigitalOcean.
 
 # generally a good idea...
 apt-get update
