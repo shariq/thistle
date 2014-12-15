@@ -18,6 +18,8 @@ def randomUsername():
     return title + name[0].upper() + name[1:].lower()
 
 
+import atexit
+
 import acorn
 import threading
 import Queue
@@ -73,6 +75,10 @@ def breakDocker(room):
     threading.Thread(target = acorn.breakDocker, args = (room, )).start()
 
 
+@atexit.register
+def cleanDocker():
+    for room in set(docker_status.keys()) + set(docker_queues.keys()):
+        acorn.breakDocker(room)
 
 
 class IndexHandler(tornado.web.RequestHandler):

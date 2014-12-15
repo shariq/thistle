@@ -15,6 +15,7 @@ from multiprocessing import Queue
 
 import threading
 
+import atexit
 
 class hostWriter:
 
@@ -121,8 +122,14 @@ if __name__ == '__main__':
             localManager.getInputQueue(),
         ))
 
+    @atexit.register
+    def cleanup():
+        outputQueue.put(None)
+        inputQueue.put(None)
+
     evalexecThread.start()
     evalexecThread.join()
     # only joins when it gets a None from acorn.py in the input queue
 
     sys.exit(0)
+
