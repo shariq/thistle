@@ -22,7 +22,7 @@ from multiprocessing.managers import BaseManager
 from multiprocessing import Queue
 import random
 import os
-
+import time
 
 def printf(s):
     # Passable print function, like in Python 3
@@ -46,6 +46,7 @@ class MessagePasser:
                                authkey='magic')
         while True:
             try:
+                time.sleep(0.5)
                 self.qm.connect()
                 # waits a long time for connection
                 # fails while Docker instance is still booting up
@@ -54,7 +55,6 @@ class MessagePasser:
                 break
             except:
                 # debugging messages
-                time.sleep(1)
                 print 'COULD NOT CONNECT TO REMOTE MANAGER'
                 print traceback.format_exc()
         self.i = self.qm.getInputQueue()
